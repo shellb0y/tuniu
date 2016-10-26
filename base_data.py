@@ -3,11 +3,22 @@
 import requests
 import time
 import random
+import json
+
+
+def get_partner():
+    return random.randint(15000, 19000)
+
+
+def get_cc():
+    return random.randint(1500, 2500)
+
 
 print 'get tuniu stations and citys...'
-req = requests.get('http://m.tuniu.com/api/train/product/StationCitys?'
-                   'd=%7B%22version%22%3A%223%22%7D&c=%7B%22v%22%3A%228.1.6%22%2C%22ct%22%3A20%2C%22'
-                   'dt%22%3A1%2C%22ov%22%3A1%2C%22p%22%3A15447%2C%22cc%22%3A1502%7D')
+
+params = {'d': json.dumps({"version": "3"}),
+          'c': json.dumps({"v": "8.1.6", "ct": 20, "dt": 1, "ov": 1, "p": get_partner(), "cc": get_cc()})}
+req = requests.get('http://m.tuniu.com/api/train/product/StationCitys', params)
 resp = req.json()
 TRAINSTAIONLIST = resp['data']['trainStationlist']
 print 'complete.'
@@ -16,21 +27,14 @@ r = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
      'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
      '1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
 
-ron=['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
-
-
-def get_city_code(name):
-    for k in TRAINSTAIONLIST:
-        t = filter(lambda d: d['cityName'] == name, TRAINSTAIONLIST[k])
-        if t:
-            return t[0]['cityCode']
+ron = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
 
 
 def get_station_code(name):
     for k in TRAINSTAIONLIST:
         t = filter(lambda d: d['stationName'] == name, TRAINSTAIONLIST[k])
         if t:
-            return t[0]['stationId']
+            return t[0]
 
 
 def get_sid(parm=str(time.time()).replace('.', '')):
@@ -45,17 +49,15 @@ def get_sid(parm=str(time.time()).replace('.', '')):
     return str1 + parm
 
 
-def get_token(n=16):
+def get_random_letter_number(n=16):
     token = []
     for i in range(n):
         token.append(random.choice(r))
     return ''.join(token)
 
-def get_imei(n=15):
+
+def get_random_number(n=15):
     imei = []
     for i in range(n):
         imei.append(random.choice(ron))
     return ''.join(imei)
-
-def get_partner():
-    return random.randint(15000,19000)
