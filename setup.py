@@ -3,7 +3,7 @@ from distutils.core import setup
 setup(
     name='tuniu',
     version='1.0',
-    packages=['requests'],
+    packages=[''],
     url='',
     license='',
     author='zt',
