@@ -30,9 +30,9 @@ r = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
 ron = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
 
 
-def get_station_code(name):
+def get_station_code_by_city_name(name):
     for k in TRAINSTAIONLIST:
-        t = filter(lambda d: d['stationName'] == name, TRAINSTAIONLIST[k])
+        t = filter(lambda d: d['cityName'] == name, TRAINSTAIONLIST[k])
         if t:
             return t[0]
 

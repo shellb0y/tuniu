@@ -17,12 +17,31 @@ from my_exception import *
 # Accept-Encoding: gzip
 #
 # {"sessionId":"0","parameters":{"version":"8.1.5","token":"46571ea36b8ee327","createTime":"Oct 22, 2016 1:48:42 PM","sid":"818394981331210412544400256009122457613312","imei":"353918053384455","lg":"1477144122904","partner":18798,"deviceType":1,"clientType":20,"apiType":1},"activateTimes":0}
+
+# HTTP/1.1 200 OK
+# Date: Tue, 25 Oct 2016 12:01:40 GMT
+# Server: nginx
+# Content-Type: text/html; charset=utf-8
+# Transfer-Encoding: chunked
+# Cache-Control: no-store,no-control,must-revalidate
+# Connection: keep-alive
+# {
+# 	"success": true,
+# 	"errorCode": 710000,
+# 	"msg": "OK",
+# 	"data": {
+# 		"sessionId": "0be5a61a4c796b61ebd4c0df8cf6e861",
+# 		"isLogin": 0
+# 	}
+# }
+
 def begin_session(partner, cc):
     timestamp = time.time()
     lg = str(timestamp).replace('.', '')
     data = {"sessionId": "0",
-            "parameters": {"version": "8.1.6", "token": base_data.get_token(), "createTime": time.ctime(timestamp),
-                           "sid": base_data.get_sid(lg), "imei": base_data.get_imei(),
+            "parameters": {"version": "8.1.6", "token": base_data.get_random_letter_number(),
+                           "createTime": time.ctime(timestamp),
+                           "sid": base_data.get_sid(lg), "imei": base_data.get_random_number(),
                            "lg": lg, "partner": partner, "deviceType": 1, "clientType": 20, "apiType": 1},
             "activateTimes": 0}
 
@@ -33,6 +52,7 @@ def begin_session(partner, cc):
     req = requests.post(url, json=data, headers={'content-type': 'application/json; charset=UTF-8',
                                                  'User-Agent': 'TuNiuApp/8.1.6/Dalvik/1.6.0 (Linux; U; Android 4.2.2)'})
     # print url
+    print 'POST %s \n%s \n%s' % (req.url, req.headers, data)
     try:
         resp = req.json()
         return resp
@@ -61,16 +81,19 @@ def begin_session(partner, cc):
 # {"success":true,"errorCode":710000,"msg":"OK","data":{"intlCode":"0086","phoneNum":"15728532201","realName":""}}
 def login(sessionid, username, password, partner, cc):
     params = {
-        'd': json.dumps({"captcha": "", "deviceId": base_data.get_token(28),
-              "sessionId": sessionid, "loginId": username,
-              "password": hashlib.md5(password).hexdigest(), "isDynamic": 0}),
+        'd': json.dumps({"captcha": "", "deviceId": base_data.get_random_letter_number(28),
+                         "sessionId": sessionid, "loginId": username,
+                         "password": hashlib.md5(password).hexdigest(), "isDynamic": 0}),
         'c': json.dumps({"v": "8.1.6", "ct": 20, "dt": 1, "ov": 1, "p": partner, "cc": cc})}
 
-    req = requests.get('https://m.tuniu.com/api/user/auth/login', params)
+    req = requests.get('https://m.tuniu.com/api/user/auth/login', params,
+                       headers={'content-type': 'application/json; charset=UTF-8',
+                                'User-Agent': 'TuNiuApp/8.1.6/Dalvik/1.6.0 (Linux; U; Android 4.2.2)'})
 
-    print req.url
+    print 'GET %s \n%s' % (req.url, req.headers)
     try:
         resp = req.json()
         return resp
     except Exception, e:
-        raise HttpRequestException(e,{'function': 'login', 'method': 'get', 'url': req.url, 'resp_content': req.content})
+        raise HttpRequestException(e,
+                                   {'function': 'login', 'method': 'get', 'url': req.url, 'resp_content': req.content})

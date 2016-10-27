@@ -6,3 +6,5 @@ try:
     raise ValueError('test',{'a':'m'})
 except ValueError,e:
     print traceback.format_exc()
+
+print 1 and None or '2'
