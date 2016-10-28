@@ -8,3 +8,13 @@ except ValueError,e:
     print traceback.format_exc()
 
 print 1 and None or '2'
+
+
+class test:
+    def __init__(self,c):
+        self.c=c
+        c['a']=1
+
+a={'b':1}
+test(a)
+print a
