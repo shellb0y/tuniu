@@ -4,6 +4,7 @@ import requests
 import time
 import random
 import json
+import re
 
 
 def get_partner():
@@ -23,11 +24,24 @@ resp = req.json()
 TRAINSTAIONLIST = resp['data']['trainStationlist']
 print 'complete.'
 
+print 'get 12306 stations and citys...'
+req = requests.get('https://kyfw.12306.cn/otn/resources/js/framework/station_name.js?station_version=1.8971', verify=False)
+STATION = req.text
+print 'complete.'
+
 r = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
      'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
      '1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
 
 ron = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
+
+
+def get_station_code_12306(name):
+    pattern = re.compile(ur'\|%s\|\w+?\|' % name)
+    match = pattern.findall(STATION)
+    if match:
+        return match[0].split('|')[2]
+    return None
 
 
 def get_station_code_by_city_name(name):

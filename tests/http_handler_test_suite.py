@@ -46,7 +46,6 @@ class HttpHandlerTestSuit(unittest.TestCase):
 
     def click_special_coupon_test(self):
 
-        # 190:10 173:5
         resp = http_handler.coupon.click_special_coupon(53652991, '8ec18aeb6e4c3c6c9422213eeed8a3f3', 174)
         print resp
 
@@ -60,8 +59,8 @@ class HttpHandlerTestSuit(unittest.TestCase):
 
     def get_account_train_order_can_use_coupon_test(self):
         resp = http_handler.account.get_account_train_order_can_use_coupon({
-            'trainNumber': 'K472', 'startStationName': '长沙站', 'arrivalStationName': '北京西站', 'departureCityCode': '1502',
-            'departDate': '2016-10-28', 'adultPrice': 343.5, 'seatId': 353438822
+            'trainNumber': 'K472', 'startStationName': '长沙站', 'arrivalStationName': '北京西站', 'departureCityCode': '200',
+            'departDate': '2016-10-28', 'adultPrice': 343.5
         }, '8ec18aeb6e4c3c6c9422213eeed8a3f3', self.partner, self.cc)
         print resp
 

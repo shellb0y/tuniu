@@ -6,6 +6,7 @@ import json
 from my_exception import *
 import time
 
+
 # GET http://m.tuniu.com/api/train/order/AddOrder?d=%7B%22zipCode%22%3A%22%22%2C%22address%22%3A%22%22%2C%22verificationCode%22%3A%22%22%2C%22travelCouponId%22%3A%22%22%2C%22arrivalCityCode%22%3A%22200%22%2C%22arrivalCityName%22%3A%22%E5%8C%97%E4%BA%AC%22%2C%22arrivalStationName%22%3A%22%E5%8C%97%E4%BA%AC%E5%8D%97%E7%AB%99%22%2C%22arrivalStations%22%3A%221175341%22%2C%22trainNumber%22%3A%22G106%22%2C%22contactList%22%3A%7B%22appellation%22%3A%22%22%2C%22email%22%3A%22%22%2C%22name%22%3A%22%22%2C%22phone%22%3A%22%22%2C%22tel%22%3A%2213192655251%22%7D%2C%22departDate%22%3A%222016-10-27%22%2C%22departureCityCode%22%3A%222500%22%2C%22departureCityName%22%3A%22%E4%B8%8A%E6%B5%B7%22%2C%22departureStationName%22%3A%22%E4%B8%8A%E6%B5%B7%E8%99%B9%E6%A1%A5%E7%AB%99%22%2C%22departureStations%22%3A%221175076%22%2C%22deviceNumber%22%3A%22863175026618021%22%2C%22trainId%22%3A%2216106%22%2C%22touristList%22%3A%5B%7B%22birthday%22%3A%221995-09-14%22%2C%22name%22%3A%22%E5%BC%A0%E5%BD%A7%E8%B1%AA%22%2C%22psptId%22%3A%22510802199509140039%22%2C%22psptType%22%3A1%2C%22isAdult%22%3A1%2C%22sex%22%3A1%7D%5D%2C%22telNum%22%3A%22%22%2C%22sessionId%22%3A%227b42973d419cbe9cce81e0d15923593f%22%2C%22seatId%22%3A%223%22%2C%22resourceId%22%3A%22353754990%22%2C%22receiverName%22%3A%22%22%2C%22promotionList%22%3A%5B%22129308%22%5D%2C%22rate%22%3A0%2C%22adultPrice%22%3A543.0%2C%22isTransferToDispatchTicket%22%3A0%2C%22isExcess%22%3A0%2C%22isDispatchTicket%22%3A0%2C%22isCouponValuable%22%3A0%2C%22insuranceResourceId%22%3A0%2C%22insurancePrice%22%3A0%2C%22childCount%22%3A0%2C%22ministryRailwaysId%22%3A0%2C%22travelCouponUseValue%22%3A0%2C%22useTrainUniquePromotion%22%3Afalse%2C%22adultCount%22%3A1%2C%22acceptStandingTicket%22%3Afalse%7D&c=%7B%22v%22%3A%228.1.6%22%2C%22ct%22%3A20%2C%22dt%22%3A1%2C%22ov%22%3A1%2C%22p%22%3A15447%2C%22cc%22%3A1502%7D HTTP/1.1
 # sid: 8f38d376-fd65-46a4-9075-375f4f63a170
 # User-Agent: TuNiuApp/8.1.6/Dalvik/1.6.0 (Linux; U; Android 4.4.2; NX507J Build/KVT49L)
@@ -33,7 +34,7 @@ def add_order(sessionid, partner, cc, data):
     if to_ is None:
         raise ValueError('cannot find to station')
 
-    print 'lookup train %s starting...' % data['train_number']
+    print 'looking for train %s' % data['train_number']
     get_train_list_resp = get_train_list(
         {"arrivalCityCode": to_['cityCode'], "arrivalCityName": data['to'], "departureCityCode": from_['cityCode'],
          "departureCityName": data['from'],
@@ -44,10 +45,10 @@ def add_order(sessionid, partner, cc, data):
 
     train = filter(lambda t: t['trainNum'] == data['train_number'], get_train_list_resp['data']['rows'])
     if train:
-        print 'lookup train %s success,lookup seat %s starting...' % (data['train_number'], data['seatName'])
+        print 'find train %s success,looking for seat %s' % (data['train_number'], data['seatName'])
         seat = filter(lambda t: t['seatName'] == data['seatName'], train[0]['seatDesc'])
         if seat:
-            print 'lookup seat %s success,order place starting...' % data['seatName']
+            print 'seat lookup %s success,order place starting...' % data['seatName']
             params = {'d': json.dumps(
                 {"zipCode": "", "address": "", "verificationCode": "", "travelCouponId": "",
                  "arrivalCityCode": to_['cityCode'],
@@ -82,8 +83,7 @@ def add_order(sessionid, partner, cc, data):
         else:
             raise ValueError('cant find trainNum %s,seat %s' % (data['train_number'], data['seatName']))
     else:
-        raise ValueError('cant find trainNum %s' % data[
-            'train_number'])
+        raise ValueError('cant find trainNum %s' % data['train_number'])
 
 
 # POST http://m.tuniu.com/api/train/product/ticketListWithFresh?c=%7B%22v%22%3A%228.1.6%22%2C%22ct%22%3A20%2C%22dt%22%3A1%2C%22ov%22%3A1%2C%22p%22%3A15447%2C%22cc%22%3A1502%7D HTTP/1.1
@@ -108,25 +108,32 @@ def add_order(sessionid, partner, cc, data):
 def get_train_list(data):
     headers = {'User-Agent': 'TuNiuApp/8.1.6/Dalvik/1.6.0 (Linux; U; Android 4.2.2)',
                'Content-Type': 'application/json; charset=UTF-8'}
-    for i in range(5):
-        req = requests.post(
-            'http://m.tuniu.com/api/train/product/ticketListWithFresh?c=%7B%22v%22%3A%228.1.6%22%2C%22ct%22%3A20%2C%22dt%22%3A1%2C%22ov%22%3A1%2C%22p%22%3A15447%2C%22cc%22%3A1502%7D',
-            json=data, headers=headers)
-        print 'POST %d %s \n%s \n%s' % (i + 1, req.url, req.headers, data)
-        try:
-            resp = req.json()
-            if resp['success']:
-                if resp['data']['rows']:
-                    return resp
 
-            time.sleep(5)
-            if i == 4:
-                raise ValueError('cant find train list')
-            continue
-        except Exception, e:
-            raise HttpRequestException(e, {'function': 'get_train_list', 'method': 'post', 'url': req.url,
-                                           'headers': headers, 'data': data,
-                                           'resp_content': req.content})
+    url = 'http://m.tuniu.com/api/train/product/ticketListWithFresh?c=%7B%22v%22%3A%228.1.6%22%2C%22ct%22%3A20%2C%22dt%22%3A1%2C%22ov%22%3A1%2C%22p%22%3A15447%2C%22cc%22%3A1502%7D'
+    req = requests.post(url, json=data, headers=headers)
+
+    print 'POST #1 %s\n%s \n%s' % (req.url, req.headers, data)
+    try:
+        resp = req.json()
+        if resp['success'] and 'rows' in resp['data'] and resp['data']['rows']:
+            return resp
+        else:
+            kyfw_req = requests.get(
+                'https://kyfw.12306.cn/otn/lcxxcx/query?purpose_codes=ADULT&queryDate=%s&from_station=%s&to_station=%s' % (
+                    data['departureDate'], base_data.get_station_code_12306(data['departureCityName']),
+                    base_data.get_station_code_12306(data['arrivalCityName'])), verify=False)
+
+            print 'request 12306:GET %s' % kyfw_req.url
+            data['trainInfo'] = kyfw_req.text
+
+            req = requests.post(url, json=data, headers=headers)
+            print 'POST #2 %s\n%s \n%s' % (req.url, req.headers, data)
+            return req.json()
+
+    except Exception, e:
+        raise HttpRequestException(e, {'function': 'get_train_list', 'method': 'post', 'url': req.url,
+                                       'headers': headers, 'data': data,
+                                       'resp_content': req.content})
 
 
 # POST http://m.tuniu.com/api/train/product/ticketListWithFresh?c=%7B%22v%22%3A%228.1.6%22%2C%22ct%22%3A20%2C%22dt%22%3A1%2C%22ov%22%3A1%2C%22p%22%3A15447%2C%22cc%22%3A1502%7D HTTP/1.1

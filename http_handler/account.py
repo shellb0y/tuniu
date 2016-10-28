@@ -92,12 +92,15 @@ def get_account_train_order_can_use_coupon(order, sessionid, partner, cc):
         {"trainNumber": order['trainNumber'], "startStationName": order['startStationName'], "sessionId": sessionid,
          "arrivalStationName": order['arrivalStationName'], "departureCityCode": order['departureCityCode'],
          "departDate": order['departDate'],
-         "adultPrice": order['adultPrice'], "insurancePrice": 0, "seatId": order['seatId'], "childCount": 0,
+         "adultPrice": order['adultPrice'], "insurancePrice": 0, "childCount": 0,
          "adultCount": 1,
          "absId": 0}), 'c': json.dumps({"v": "8.1.6", "ct": 20, "dt": 1, "ov": 1, "p": partner, "cc": cc})}
-
+    # "seatId": order['seatId'],
     req = requests.get(
         'http://m.tuniu.com/api/train/order/getMyCoupons', params=params, headers=headers)
+
+    print 'GET %s \n%s' % (req.url, req.headers)
+
     try:
         return req.json()
     except Exception, e:
