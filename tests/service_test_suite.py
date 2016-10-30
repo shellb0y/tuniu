@@ -22,3 +22,6 @@ class ServcieTestSuite(unittest.TestCase):
                      "isAdult": 1,
                      "sex": 1}], 'promotionList': []  # '126246'
             }, [194,176])
+
+if __name__ == '__main__':
+    unittest.main()
