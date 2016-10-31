@@ -5,6 +5,7 @@ import json
 import time
 import base64
 from my_exception import *
+import log_ex as logger
 
 
 # GET https://m.tuniu.com/iapi/appserver/view/myAccountInfoV400?{"sessionID":"7b42973d419cbe9cce81e0d15923593f","r":"1477394962287","partner":15447,"clientType":20,"deviceType":1,"version":"8.1.6","_currentCityCode":"1502"} HTTP/1.1
@@ -15,7 +16,7 @@ def account_info(sessionid, partner):
         {"sessionID": sessionid, "r": time.time(), "partner": partner, "clientType": 20,
          "deviceType": 1, "version": "8.1.6"})), headers={'content-type': 'application/json; charset=UTF-8',
                                                           'User-Agent': 'TuNiuApp/8.1.6/Dalvik/1.6.0 (Linux; U; Android 4.2.2)'})  # "_currentCityCode": "1502"
-    print 'GET %s \n%s' % (req.url, req.headers)
+    logger.debug('GET %s \n%s' % (req.url, req.headers))
     try:
         return json.loads(base64.b64decode(req.content))
     except Exception, e:
@@ -60,7 +61,7 @@ def get_account_coupon(userid, sessionid):
         'http://dynamic.m.tuniu.com/japi/members/coupons/getCanUse?d=%7B%22page%22%3A1%2C%22limit%22%3A20%2C%22codeType%22%3A0%7D',
         headers=headers)
 
-    print 'GET %s \n%s' % (req.url, req.headers)
+    logger.debug('GET %s \n%s' % (req.url, req.headers))
 
     try:
         return req.json()
@@ -99,7 +100,7 @@ def get_account_train_order_can_use_coupon(order, sessionid, partner, cc):
     req = requests.get(
         'http://m.tuniu.com/api/train/order/getMyCoupons', params=params, headers=headers)
 
-    print 'GET %s \n%s' % (req.url, req.headers)
+    logger.debug('GET %s \n%s' % (req.url, req.headers))
 
     try:
         return req.json()

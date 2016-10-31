@@ -5,6 +5,7 @@ import requests
 import json
 from my_exception import *
 import time
+import log_ex as logger
 
 
 # GET http://m.tuniu.com/api/train/order/AddOrder?d=%7B%22zipCode%22%3A%22%22%2C%22address%22%3A%22%22%2C%22verificationCode%22%3A%22%22%2C%22travelCouponId%22%3A%22%22%2C%22arrivalCityCode%22%3A%22200%22%2C%22arrivalCityName%22%3A%22%E5%8C%97%E4%BA%AC%22%2C%22arrivalStationName%22%3A%22%E5%8C%97%E4%BA%AC%E5%8D%97%E7%AB%99%22%2C%22arrivalStations%22%3A%221175341%22%2C%22trainNumber%22%3A%22G106%22%2C%22contactList%22%3A%7B%22appellation%22%3A%22%22%2C%22email%22%3A%22%22%2C%22name%22%3A%22%22%2C%22phone%22%3A%22%22%2C%22tel%22%3A%2213192655251%22%7D%2C%22departDate%22%3A%222016-10-27%22%2C%22departureCityCode%22%3A%222500%22%2C%22departureCityName%22%3A%22%E4%B8%8A%E6%B5%B7%22%2C%22departureStationName%22%3A%22%E4%B8%8A%E6%B5%B7%E8%99%B9%E6%A1%A5%E7%AB%99%22%2C%22departureStations%22%3A%221175076%22%2C%22deviceNumber%22%3A%22863175026618021%22%2C%22trainId%22%3A%2216106%22%2C%22touristList%22%3A%5B%7B%22birthday%22%3A%221995-09-14%22%2C%22name%22%3A%22%E5%BC%A0%E5%BD%A7%E8%B1%AA%22%2C%22psptId%22%3A%22510802199509140039%22%2C%22psptType%22%3A1%2C%22isAdult%22%3A1%2C%22sex%22%3A1%7D%5D%2C%22telNum%22%3A%22%22%2C%22sessionId%22%3A%227b42973d419cbe9cce81e0d15923593f%22%2C%22seatId%22%3A%223%22%2C%22resourceId%22%3A%22353754990%22%2C%22receiverName%22%3A%22%22%2C%22promotionList%22%3A%5B%22129308%22%5D%2C%22rate%22%3A0%2C%22adultPrice%22%3A543.0%2C%22isTransferToDispatchTicket%22%3A0%2C%22isExcess%22%3A0%2C%22isDispatchTicket%22%3A0%2C%22isCouponValuable%22%3A0%2C%22insuranceResourceId%22%3A0%2C%22insurancePrice%22%3A0%2C%22childCount%22%3A0%2C%22ministryRailwaysId%22%3A0%2C%22travelCouponUseValue%22%3A0%2C%22useTrainUniquePromotion%22%3Afalse%2C%22adultCount%22%3A1%2C%22acceptStandingTicket%22%3Afalse%7D&c=%7B%22v%22%3A%228.1.6%22%2C%22ct%22%3A20%2C%22dt%22%3A1%2C%22ov%22%3A1%2C%22p%22%3A15447%2C%22cc%22%3A1502%7D HTTP/1.1
@@ -34,7 +35,7 @@ def add_order(sessionid, partner, cc, data):
     if to_ is None:
         raise ValueError('cannot find to station')
 
-    print 'looking for train %s' % data['train_number']
+    logger.info('looking for train %s' % data['train_number'])
     get_train_list_resp = get_train_list(
         {"arrivalCityCode": to_['cityCode'], "arrivalCityName": data['to'], "departureCityCode": from_['cityCode'],
          "departureCityName": data['from'],
@@ -45,10 +46,10 @@ def add_order(sessionid, partner, cc, data):
 
     train = filter(lambda t: t['trainNum'] == data['train_number'], get_train_list_resp['data']['rows'])
     if train:
-        print 'find train %s success,looking for seat %s' % (data['train_number'], data['seatName'])
+        logger.info('find train %s success,looking for seat %s' % (data['train_number'], data['seatName']))
         seat = filter(lambda t: t['seatName'] == data['seatName'], train[0]['seatDesc'])
         if seat:
-            print 'seat lookup %s success,order place starting...' % data['seatName']
+            logger.info('seat lookup %s success,order place starting...' % data['seatName'])
             params = {'d': json.dumps(
                 {"zipCode": "", "address": "", "verificationCode": "", "travelCouponId": "",
                  "arrivalCityCode": to_['cityCode'],
@@ -73,7 +74,7 @@ def add_order(sessionid, partner, cc, data):
                 'c': json.dumps({"v": "8.1.6", "ct": 20, "dt": 1, "ov": 1, "p": partner, "cc": cc})}
 
             req = requests.get('http://m.tuniu.com/api/train/order/AddOrder', params)
-            print 'GET %s' % req.url
+            logger.debug('GET %s' % req.url)
             try:
                 resp = req.json()
                 return resp
@@ -112,7 +113,7 @@ def get_train_list(data):
     url = 'http://m.tuniu.com/api/train/product/ticketListWithFresh?c=%7B%22v%22%3A%228.1.6%22%2C%22ct%22%3A20%2C%22dt%22%3A1%2C%22ov%22%3A1%2C%22p%22%3A15447%2C%22cc%22%3A1502%7D'
     req = requests.post(url, json=data, headers=headers)
 
-    print 'POST #1 %s\n%s \n%s' % (req.url, req.headers, data)
+    logger.debug('POST #1 %s\n%s \n%s' % (req.url, req.headers, data))
     try:
         resp = req.json()
         if resp['success'] and 'rows' in resp['data'] and resp['data']['rows']:
@@ -123,11 +124,11 @@ def get_train_list(data):
                     data['departureDate'], base_data.get_station_code_12306(data['departureCityName']),
                     base_data.get_station_code_12306(data['arrivalCityName'])), verify=False)
 
-            print 'request 12306:GET %s' % kyfw_req.url
+            logger.debug('request 12306:GET %s' % kyfw_req.url)
             data['trainInfo'] = kyfw_req.text
 
             req = requests.post(url, json=data, headers=headers)
-            print 'POST #2 %s\n%s \n%s' % (req.url, req.headers, data)
+            logger.debug('POST #2 %s\n%s \n%s' % (req.url, req.headers, data))
             return req.json()
 
     except Exception, e:

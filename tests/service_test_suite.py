@@ -2,6 +2,7 @@
 import service
 import unittest
 import base_data
+import log_ex
 
 
 class ServcieTestSuite(unittest.TestCase):

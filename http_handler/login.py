@@ -6,6 +6,7 @@ import time
 import json
 import hashlib
 from my_exception import *
+import log_ex as logger
 
 
 # POST https://m.tuniu.com/api/user/auth/beginSession?c=%7B%22v%22%3A%228.1.5%22%2C%22ct%22%3A20%2C%22dt%22%3A1%2C%22ov%22%3A1%2C%22p%22%3A18798%2C%22cc%22%3A2500%7D HTTP/1.1
@@ -52,7 +53,7 @@ def begin_session(partner, cc):
     req = requests.post(url, json=data, headers={'content-type': 'application/json; charset=UTF-8',
                                                  'User-Agent': 'TuNiuApp/8.1.6/Dalvik/1.6.0 (Linux; U; Android 4.2.2)'})
     # print url
-    print 'POST %s \n%s \n%s' % (req.url, req.headers, data)
+    logger.debug('POST %s \n%s \n%s' % (req.url, req.headers, data))
     try:
         resp = req.json()
         return resp
@@ -90,7 +91,7 @@ def login(sessionid, username, password, partner, cc):
                        headers={'content-type': 'application/json; charset=UTF-8',
                                 'User-Agent': 'TuNiuApp/8.1.6/Dalvik/1.6.0 (Linux; U; Android 4.2.2)'})
 
-    print 'GET %s \n%s' % (req.url, req.headers)
+    logger.debug('GET %s \n%s' % (req.url, req.headers))
     try:
         resp = req.json()
         return resp

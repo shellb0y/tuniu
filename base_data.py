@@ -5,6 +5,7 @@ import time
 import random
 import json
 import re
+import log_ex as logger
 
 
 def get_partner():
@@ -15,19 +16,20 @@ def get_cc():
     return random.randint(1500, 2500)
 
 
-print 'get tuniu stations and citys...'
+logger.info('get tuniu stations and citys...')
 
 params = {'d': json.dumps({"version": "3"}),
           'c': json.dumps({"v": "8.1.6", "ct": 20, "dt": 1, "ov": 1, "p": get_partner(), "cc": get_cc()})}
 req = requests.get('http://m.tuniu.com/api/train/product/StationCitys', params)
 resp = req.json()
 TRAINSTAIONLIST = resp['data']['trainStationlist']
-print 'complete.'
+logger.info('complete.')
 
-print 'get 12306 stations and citys...'
-req = requests.get('https://kyfw.12306.cn/otn/resources/js/framework/station_name.js?station_version=1.8971', verify=False)
+logger.info('get 12306 stations and citys...')
+req = requests.get('https://kyfw.12306.cn/otn/resources/js/framework/station_name.js?station_version=1.8971',
+                   verify=False)
 STATION = req.text
-print 'complete.'
+logger.info('complete.')
 
 r = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
      'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
