@@ -16,13 +16,14 @@ class ServcieTestSuite(unittest.TestCase):
     def place_order_test(self):
         self.trainOrderService.place_order(
             {
-                'from': u'乌鲁木齐南', 'to': u'嘉峪关南', 'depart_date': '2016-11-28', 'price': 334, 'seatName': u'二等',
-                'train_number': 'D2714', 'phone': '13192655251',
+                'from': u'温州南', 'to': u'上海虹桥', 'depart_date': '2016-12-05', 'price': 334, 'seatName': u'二等',
+                'train_number': 'D2288', 'phone': '13192655251',
                 'touristList': [
-                    {"birthday": "1987-03-03", "name": u"张庆梅", "psptId": "412801198703032610", "psptType": 1,
+                    {"birthday": "1985-06-02", "name": u"武仕伟", "psptId": "130129198506021014", "psptType": 1,
                      "isAdult": 1,
                      "sex": 1}], 'promotionList': []  # '126246'
             }, [194,176])
+
 
 if __name__ == '__main__':
     unittest.main()

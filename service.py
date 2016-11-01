@@ -4,26 +4,39 @@ import http_handler
 import base_data
 import json
 import log_ex as logger
+import requests
+import app_conf
 
 
 class TrainOrderService:
-    def __init__(self, account):
+    def __init__(self, account, acountid):
         self.partner = base_data.get_partner()
         self.cc = base_data.get_cc()
         self.account = account
 
         logger.info('check session by get user id %s' % account)
 
-        if not account['sessionid']:
+        if not account.has_key('sessionid') or not account['sessionid']:
             logger.info('need login')
             self.login()
 
         self.get_user_id()
 
+        logger.info('update account data')
+        req = requests.put(app_conf.put_account % acountid, data=json.dumps(account),
+                           headers={'Content-Type': 'application/json'})
+        logger.debug('put %s %s' % (req.url, account))
+        logger.debug('resp:%s'% req.text)
+
+        if req.text == '1':
+            logger.info('update account success')
+        else:
+            raise ValueError('update account faild')
+
     def login(self):
         logger.info('login starting...\n1#.get session id')
         begin_session_resp = http_handler.login.begin_session(self.partner, self.cc)
-        logger.info('begin session resp:%s', begin_session_resp)
+        logger.info('begin session resp:%s' % begin_session_resp)
 
         if begin_session_resp['success']:
             self.account['sessionid'] = begin_session_resp['data']['sessionId']
@@ -32,7 +45,7 @@ class TrainOrderService:
             logger.info('#2.login')
             login_resp = http_handler.login.login(self.account['sessionid'], self.account['username'],
                                                   self.account['password'], self.partner, self.cc)
-            logger.debug('login resp:%s', login_resp)
+            logger.debug('login resp:%s' % login_resp)
             if login_resp['success']:
                 logger.info('login success,the sessionid is %s' % self.account['sessionid'])
                 return self.account['sessionid']
@@ -110,11 +123,6 @@ class TrainOrderService:
 
         logger.info('READY:%s' % data)
         add_order_resp = http_handler.train_order.add_order(self.account['sessionid'], self.partner, self.cc, data)
-        logger.debug('add order response:%s'% add_order_resp)
+        logger.debug('add order response:%s' % add_order_resp)
 
-        if add_order_resp['success']:
-            logger.info('place order success')
-            return True
-        else:
-            logger.error('place order faild')
-            return False
+        return add_order_resp

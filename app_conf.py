@@ -1,0 +1,6 @@
+get_train_order = 'http://op.yikao666.cn/JDTrainOpen/getOrderForTN'
+train_order_callback = 'http://op.yikao666.cn/JDTrainOpen/CallBackForTN?id=%d&success=%s'
+save_order = 'http://localhost:8000/api/mobilepay/order'
+set_order_status = 'http://localhost:8000/api/mobilepay/order/status/%s/%s'
+get_account_tuniu='http://localhost:8000/api/mobilepay/account/tuniu'
+put_account='http://localhost:8000/api/mobilepay/account/%d'

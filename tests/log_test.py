@@ -2,6 +2,7 @@ import logging
 import logstash
 import sys
 import unittest
+import traceback
 
 
 class LogTestSuite(unittest.TestCase):
