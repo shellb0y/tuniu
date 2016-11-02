@@ -35,11 +35,3 @@ if not a.has_key('b') or not a['b']:
 else:
     print 'yes'
 
-
-
-req = requests.get(app_conf.get_account_tuniu)
-if req.status_code == 200:
-    account = req.json()
-    print ('account:%s' % account)
-    print ('prepare the orders data')
-    trainService = service.TrainOrderService(json.loads(account['data']), account['id'])

@@ -7,7 +7,6 @@ import log_ex as logger
 import requests
 import app_conf
 
-
 class TrainOrderService:
     def __init__(self, account, acountid):
         self.partner = base_data.get_partner()

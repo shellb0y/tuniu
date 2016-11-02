@@ -14,32 +14,33 @@ import time
 #                        "password": "734206"})
 # adsl_service.set_adsl()
 
-logger.info('get train data from %s' % app_conf.get_train_order)
 
 try:
-    req = requests.get(app_conf.get_train_order)
-    resp = req.json()
-    logger.debug('response:%s' % resp)
-
-    partner_order_id = resp['order_id']
-
-    logger.info('save train data')
-    req = requests.post(app_conf.save_order, data=resp, headers={'Content-Type': 'application/json'})
-    order_id = req.text
-
-    if order_id:
-        logger.info('save order success')
-    else:
-        logger.error('save order faild,exit')
-        exit()
-
     logger.info('get tuniu account')
     req = requests.get(app_conf.get_account_tuniu)
     if req.status_code == 200:
         account = req.json()
         logger.debug('account:%s' % json.dumps(account))
+        trainService = service.TrainOrderService(json.loads(account['data']), account['id'])
+
+        logger.info('get train data from %s' % app_conf.get_train_order)
+        req = requests.get(app_conf.get_train_order)
+        resp = req.json()
+        logger.debug('response:%s' % resp)
+
+        partner_order_id = resp['order_id']
+
+        logger.info('save train data')
+        req = requests.post(app_conf.save_order, data=resp, headers={'Content-Type': 'application/json'})
+        order_id = req.text
+
+        if order_id:
+            logger.info('save order success')
+        else:
+            logger.error('save order faild,exit')
+            exit()
+
         logger.info('prepare the orders data')
-        trainService = service.TrainOrderService(json.loads(account['data']),account['id'])
         data = {
             'from': resp['from_station'], 'to': resp['to_station'],
             'depart_date': resp['train_date'].replace('00:00:00', ''), 'price': resp['ticket_price'], 'seatName': u'二等',
