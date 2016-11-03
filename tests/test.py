@@ -6,7 +6,6 @@ import re
 import requests
 import app_conf
 from log_ex import logger
-import service
 import json
 
 try:
@@ -34,4 +33,3 @@ if not a.has_key('b') or not a['b']:
     print 'not'
 else:
     print 'yes'
-

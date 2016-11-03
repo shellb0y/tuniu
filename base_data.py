@@ -8,6 +8,7 @@ import re
 import log_ex as logger
 
 
+
 def get_partner():
     return random.randint(15000, 19000)
 
