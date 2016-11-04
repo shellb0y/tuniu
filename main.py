@@ -31,10 +31,10 @@ try:
         partner_order_id = resp['order_id']
 
         logger.info('save train data')
-        req = requests.post(app_conf.save_order, data=resp, headers={'Content-Type': 'application/json'})
+        req = requests.post(app_conf.save_order, data=json.dumps(resp), headers={'Content-Type': 'application/json'})
         order_id = req.text
 
-        if order_id:
+        if order_id and req.status_code == 200:
             logger.info('save order success')
         else:
             logger.error('save order faild,exit')
@@ -44,20 +44,32 @@ try:
         data = {
             'from': resp['from_station'], 'to': resp['to_station'],
             'depart_date': resp['train_date'].replace('00:00:00', ''), 'price': resp['ticket_price'], 'seatName': u'二等',
-            'train_number': resp['checi'], 'phone': account['userid'],
+            'train_number': resp['checi'], 'phone': json.loads(account['data'])['username'],
             'touristList': [
-                {"birthday": resp['passport_se_no'][6:10] + '-' + resp['passport_se_no'][10:12] + '-' + resp['passport_se_no'][12:14],
+                {"birthday": resp['passport_se_no'][6:10] + '-' + resp['passport_se_no'][10:12] + '-' + resp[
+                                                                                                            'passport_se_no'][
+                                                                                                        12:14],
                  "name": resp['passenger_name'], "psptId": resp['passport_se_no'], "psptType": 1,
                  "isAdult": 1,
                  "sex": int(resp['passport_se_no'][-2]) % 2}], 'promotionList': []  # '126246'
         }
-        # TODO:支付
-        logger.debug("READY:%s",data)
+
+        logger.debug("READY:%s" % data)
         resp = trainService.place_order(data, [194, 176])
-        if resp['success']:
-            logger.info('place order success')
-        else:
-            logger.error('place order faild,callback')
+        logger.info('ALL SUCCESS.')
+
+
+
+        # logger.info('partner callback 1# begin.')
+        # req = requests.get(app_conf.train_order_callback % (partner_order_id, 'true'))
+        # resp = req.json()
+        # logger.info(resp)
+
+        # TODO:TEST
+        logger.info('mobilepay callback')
+        req = requests.put(app_conf.set_order_status % (order_id, u'下单成功'),data=json.dumps(resp),
+                           headers={'Content-Type': 'application/json'})
+        logger.info(req.text)
 
     elif req.status_code == 204:
         logger.error('not more tuniu account,sleep 5m')
@@ -66,7 +78,19 @@ try:
         logger.error('get tuniu account falid')
         exit()
 
-
 except Exception, e:
     logger.error(traceback.format_exc())
+    if partner_order_id:
+        logger.info('partner callback 1# begin.')
+        req = requests.get(app_conf.train_order_callback % (partner_order_id, 'false'))
+        resp = req.json()
+        logger.info(resp)
+
+    if order_id:
+        logger.info('mobilepay callback 2#')
+        req = requests.put(app_conf.set_order_status % (order_id, u'下单失败'),
+                           data=json.dumps({'error': traceback.format_exc()}),
+                           headers={'Content-Type': 'application/json'})
+        logger.info(req.text)
+
     exit()

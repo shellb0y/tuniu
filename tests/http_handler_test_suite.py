@@ -5,6 +5,7 @@ import unittest
 import base_data
 import urllib
 import json
+import uuid
 
 
 class HttpHandlerTestSuit(unittest.TestCase):
@@ -25,7 +26,7 @@ class HttpHandlerTestSuit(unittest.TestCase):
             'train_number': 'G1920', 'phone': '13192655251',
             'touristList': [
                 {"birthday": "1974-11-26", "name": "蒋学松", "psptId": "34112519741126147X", "psptType": 1, "isAdult": 1,
-                 "sex": 1}], 'promotionList': []#'126246'
+                 "sex": 1}], 'promotionList': []  # '126246'
         })
 
     def account_info_test(self):
@@ -78,3 +79,15 @@ class HttpHandlerTestSuit(unittest.TestCase):
         if train:
             seat = filter(lambda t: t['seatName'] == u'二等', train[0]['seatDesc'])
             print seat[0]['resId'], seat[0]['seatId'], seat[0]['price']
+
+    def order_submit_test(self):
+        resp = http_handler.pay.submit(
+            {'userId': 53652883, 'orderId': 14105241, 'price': '573.0', 'sessionId': 'a69921200054a3619ca7848bbb27925c',
+             'termId': str(uuid.uuid1())})
+        print resp
+
+    def pay_confrim_test(self):
+        resp = http_handler.pay.confirm(
+            {'userId': 53652883, 'orderId': 14105241, 'price': '573.0', 'sessionId': 'a69921200054a3619ca7848bbb27925c',
+             'termId': str(uuid.uuid1())})
+        print resp

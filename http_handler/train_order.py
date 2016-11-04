@@ -135,26 +135,3 @@ def get_train_list(data):
         raise HttpRequestException(e, {'function': 'get_train_list', 'method': 'post', 'url': req.url,
                                        'headers': headers, 'data': data,
                                        'resp_content': req.content})
-
-
-# POST http://m.tuniu.com/api/train/product/ticketListWithFresh?c=%7B%22v%22%3A%228.1.6%22%2C%22ct%22%3A20%2C%22dt%22%3A1%2C%22ov%22%3A1%2C%22p%22%3A15447%2C%22cc%22%3A1502%7D HTTP/1.1
-# sid: 2735e2c4-a91d-4cc3-92ed-bcdbaa52c57c
-# User-Agent: TuNiuApp/8.1.6/Dalvik/1.6.0 (Linux; U; Android 4.4.2; NX507J Build/KVT49L)
-# host: m.tuniu.com
-# Content-Type: application/json; charset=UTF-8
-# Content-Length: 309
-# Connection: Keep-Alive
-# Accept-Encoding: gzip
-#
-# {"arrivalCityCode":"1502","arrivalCityName":"长沙南","arrivalStations":["1176886"],"departureCityCode":"200","departureCityName":"北京西","departureDate":"2016-11-23","departureStations":["1175343"],"deviceNumber":"863175026618021","sortName":0,"sortType":0,"start":0,"showAvailableTickets":0,"limit":0}
-# HTTP/1.1 200 OK
-# Date: Tue, 25 Oct 2016 09:18:17 GMT
-# Server: nginx
-# Content-Type: text/html; charset=utf-8
-# X-Via: 1.1 szhj11:5 (Cdn Cache Server V2.0), 1.1 shydx35:7 (Cdn Cache Server V2.0)
-# Connection: keep-alive
-# Content-Length: 1920
-#
-# {"success":true,"errorCode":710000,"msg":"OK","data":{"remark":"","memo":"","expire":true,"freshUrl":"https:\/\/kyfw.12306.cn\/otn\/lcxxcx\/query?purpose_codes=ADULT&queryDate=2016-11-23&from_station=BXP&to_station=CWQ","departureDate":"2016-11-23","count":0,"rows":[],"trainTypes":[{"id":null,"trainTypeId":null,"trainType":"不限"},{"id":0,"trainTypeId":"0","trainType":"G-高铁"},{"id":3,"trainTypeId":"3","trainType":"Z-直达"},{"id":4,"trainTypeId":"4","trainType":"T-特快"},{"id":5,"trainTypeId":"5","trainType":"K-普快"}],"seats":[{"seatId":null,"seatName":"不限"},{"seatId":"0","seatName":"商务"},{"seatId":"1","seatName":"特等"},{"seatId":"2","seatName":"一等"},{"seatId":"3","seatName":"二等"},{"seatId":"4","seatName":"高软"},{"seatId":"5","seatName":"软卧"},{"seatId":"6","seatName":"硬卧"},{"seatId":"8","seatName":"硬座"},{"seatId":"9","seatName":"无座"}],"departStationTypes":[{"departStationTypeId":0,"departStationTypeName":"始发"},{"departStationTypeId":2,"departStationTypeName":"过路"}],"departureTimes":[{"id":"0-6","departureTime":"0-6","isSelected":0},{"id":"6-12","departureTime":"6-12","isSelected":0},{"id":"12-18","departureTime":"12-18","isSelected":0},{"id":"18-24","departureTime":"18-24","isSelected":0}],"arrivalTimes":[{"id":"0-6","arrivalTime":"0-6","isSelected":0},{"id":"6-12","arrivalTime":"6-12","isSelected":0},{"id":"12-18","arrivalTime":"12-18","isSelected":0},{"id":"18-24","arrivalTime":"18-24","isSelected":0}],"departureStations":[{"code":"1175343","name":"北京西站"},{"code":"1175342","name":"北京站"}],"arrivalStations":[{"code":"1176886","name":"长沙南站"},{"code":"1176888","name":"长沙站"}],"departureDates":{"yesterday":"2016-11-22","today":"2016-11-23","tomorrow":"2016-11-24"}}}
-def get_train():
-    pass

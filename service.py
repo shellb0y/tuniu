@@ -6,6 +6,8 @@ import json
 import log_ex as logger
 import requests
 import app_conf
+import uuid
+
 
 class TrainOrderService:
     def __init__(self, account, acountid):
@@ -19,13 +21,13 @@ class TrainOrderService:
             logger.info('need login')
             self.login()
 
-        self.get_user_id()
+        account['userId'] = self.get_user_id()
 
         logger.info('update account data')
         req = requests.put(app_conf.put_account % acountid, data=json.dumps(account),
                            headers={'Content-Type': 'application/json'})
         logger.debug('put %s %s' % (req.url, account))
-        logger.debug('resp:%s'% req.text)
+        logger.debug('resp:%s' % req.text)
 
         if req.text == '1':
             logger.info('update account success')
@@ -121,7 +123,50 @@ class TrainOrderService:
                 self.__lookup_coupon(data)
 
         logger.info('READY:%s' % data)
-        add_order_resp = http_handler.train_order.add_order(self.account['sessionid'], self.partner, self.cc, data)
-        logger.debug('add order response:%s' % add_order_resp)
+        resp = http_handler.train_order.add_order(self.account['sessionid'], self.partner, self.cc, data)
+        logger.debug('add order response:%s' % resp)
 
-        return add_order_resp
+        if resp['success']:
+            termId = str(uuid.uuid1())
+            pay_data = {'bizOrderId': resp['data']['orderId'], 'price': data['price'],}
+            logger.info('add order success.id:%s.submiting...' % pay_data['bizOrderId'])
+
+            resp = http_handler.pay.submit(
+                {'userId': self.account['userid'], 'orderId': pay_data['bizOrderId'], 'price': pay_data['price'],
+                 'sessionId': self.account['sessionid'],
+                 'termId': termId})
+
+            logger.debug('order submit response:%s' % resp)
+            if resp['success']:
+                pay_data['orderId'] = resp['data']['orderId']
+                pay_data['price'] = resp['data']['remainAmount']
+
+                logger.info(
+                    'order submit success,payid:%s,price:%s,confirming...' % (pay_data['orderId'], pay_data['price']))
+
+                resp = http_handler.pay.confirm(
+                    {'userId': self.account['userid'], 'orderId': pay_data['orderId'], 'price': pay_data['price'],
+                     'sessionId': self.account['sessionid'],
+                     'termId': termId})
+                logger.debug('order confirm response:%s' % resp)
+
+                if resp['success']:
+                    pay_data['finalOrderId'] = resp['data']['finalOrderId']
+                    pay_data['alipay_url'] = resp['data']['url']
+                    logger.info('order confirm success.alipay url:%s\nupload data' % pay_data['alipay_url'])
+
+                    return pay_data
+                else:
+                    err = 'order confirm faild'
+                    logger.error(err)
+                    raise ValueError(err)
+
+            else:
+                err = 'order submit faild'
+                logger.error(err)
+                raise ValueError(err)
+
+        else:
+            err = 'add order faild'
+            logger.error(err)
+            raise ValueError(err)

@@ -2,11 +2,7 @@
 # s = '你好'
 # print '\u5357\u4eac'.decode('raw_unicode_escape')
 import traceback
-import re
-import requests
-import app_conf
-from log_ex import logger
-import json
+import uuid
 
 try:
     raise ValueError('test',{'a':'m'})
@@ -33,3 +29,6 @@ if not a.has_key('b') or not a['b']:
     print 'not'
 else:
     print 'yes'
+
+
+print uuid.uuid1()
