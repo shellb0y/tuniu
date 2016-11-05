@@ -3,6 +3,7 @@
 import requests
 import unittest
 import json
+import urllib
 
 
 class OrderApiTest(unittest.TestCase):
@@ -23,12 +24,13 @@ class OrderApiTest(unittest.TestCase):
         self.assertIsNotNone(req.text)
 
     def set_order_status_test(self):
-        req = requests.put(u'http://localhost:8000/api/mobilepay/order/status/20747/下单失败',
+        req = requests.put(u'http://localhost:8000/api/mobilepay/order/status/10023/' + urllib.quote('下单失败'),
                            data=json.dumps({'error': 'error'}), headers={'Content-Type': 'application/json'})
         self.assertEqual(req.text, '1')
 
-        req = requests.put(u'http://localhost:8000/api/mobilepay/order/status/20721/下单成功')
-        self.assertEqual(req.text, '1')
+        # req = requests.put(u'http://localhost:8000/api/mobilepay/order/status/10022/下单成功',
+        #                    data=json.dumps({'url': 'afdafdafd'}), headers={'Content-Type': 'application/json'})
+        # self.assertEqual(req.text, '1')
 
     def get_account_api_test(self):
         req = requests.get('http://localhost:8000/api/mobilepay/account/tuniu')

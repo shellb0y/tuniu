@@ -31,4 +31,4 @@ else:
     print 'yes'
 
 
-print uuid.uuid1()
+print len([1]) > 0

@@ -7,7 +7,6 @@ import log_ex as logger
 import requests
 import json
 import traceback
-import time
 
 # adsl_service = adsl.Adsl({"name": u"宽带连接",
 #                        "username": "057474432953",
@@ -41,14 +40,25 @@ try:
             exit()
 
         logger.info('prepare the orders data')
+
+        if resp['zw_name'] == u'二等座':
+            seatName = u'二等'
+        elif resp['zw_name'] == u'一等座':
+            seatName = u'一等'
+        elif resp['zw_name'] == u'特等座':
+            seatName = u'特等'
+        elif resp['zw_name'] == u'商务座':
+            seatName = u'商务'
+        else:
+            seatName = resp['zw_name']
+
         data = {
             'from': resp['from_station'], 'to': resp['to_station'],
-            'depart_date': resp['train_date'].replace('00:00:00', ''), 'price': resp['ticket_price'], 'seatName': u'二等',
+            'depart_date': resp['train_date'].replace('00:00:00', ''), 'price': resp['ticket_price'], 'seatName': seatName,
             'train_number': resp['checi'], 'phone': json.loads(account['data'])['username'],
             'touristList': [
-                {"birthday": resp['passport_se_no'][6:10] + '-' + resp['passport_se_no'][10:12] + '-' + resp[
-                                                                                                            'passport_se_no'][
-                                                                                                        12:14],
+                {"birthday": resp['passport_se_no'][6:10] + '-' + resp['passport_se_no'][10:12] + '-'
+                             + resp['passport_se_no'][12:14],
                  "name": resp['passenger_name'], "psptId": resp['passport_se_no'], "psptType": 1,
                  "isAdult": 1,
                  "sex": int(resp['passport_se_no'][-2]) % 2}], 'promotionList': []  # '126246'
@@ -58,8 +68,6 @@ try:
         resp = trainService.place_order(data, [194, 176])
         logger.info('ALL SUCCESS.')
 
-
-
         # logger.info('partner callback 1# begin.')
         # req = requests.get(app_conf.train_order_callback % (partner_order_id, 'true'))
         # resp = req.json()
@@ -67,7 +75,7 @@ try:
 
         # TODO:TEST
         logger.info('mobilepay callback')
-        req = requests.put(app_conf.set_order_status % (order_id, u'下单成功'),data=json.dumps(resp),
+        req = requests.put(app_conf.set_order_status % (order_id, u'下单成功'), data=json.dumps(resp),
                            headers={'Content-Type': 'application/json'})
         logger.info(req.text)
 

@@ -153,6 +153,7 @@ class TrainOrderService:
                 if resp['success']:
                     pay_data['finalOrderId'] = resp['data']['finalOrderId']
                     pay_data['alipay_url'] = resp['data']['url']
+                    # pay_data['account'] = self.account
                     logger.info('order confirm success.alipay url:%s\nupload data' % pay_data['alipay_url'])
 
                     return pay_data
