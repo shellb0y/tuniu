@@ -102,7 +102,7 @@ class TrainOrderService:
             'departureCityCode': '200',
             'departDate': data['depart_date'], 'adultPrice': data['price']
         }, self.account['sessionid'], self.partner, self.cc)
-        logger.debug('train order coupon resp:%s' % train_order_coupon_resp)
+        #logger.debug('train order coupon resp:%s' % train_order_coupon_resp)
 
         if train_order_coupon_resp['success'] and train_order_coupon_resp['data']['sortData']:
             coupon = train_order_coupon_resp['data']['sortData'][0]
@@ -153,7 +153,7 @@ class TrainOrderService:
                 if resp['success']:
                     pay_data['finalOrderId'] = resp['data']['finalOrderId']
                     pay_data['alipay_url'] = resp['data']['url']
-                    # pay_data['account'] = self.account
+                    pay_data['account'] = json.dumps(self.account)
                     logger.info('order confirm success.alipay url:%s\nupload data' % pay_data['alipay_url'])
 
                     return pay_data
