@@ -3,6 +3,7 @@
 # print '\u5357\u4eac'.decode('raw_unicode_escape')
 import traceback
 import uuid
+import datetime
 
 try:
     raise ValueError('test',{'a':'m'})
@@ -31,4 +32,4 @@ else:
     print 'yes'
 
 
-print len([1]) > 0
+print  datetime.datetime.now()+datetime.timedelta(minutes=25)

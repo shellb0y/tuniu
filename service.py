@@ -7,6 +7,7 @@ import log_ex as logger
 import requests
 import app_conf
 import uuid
+import datetime
 
 
 class TrainOrderService:
@@ -154,6 +155,7 @@ class TrainOrderService:
                     pay_data['finalOrderId'] = resp['data']['finalOrderId']
                     pay_data['alipay_url'] = resp['data']['url']
                     pay_data['account'] = json.dumps(self.account)
+                    pay_data['timeout'] = datetime.datetime.now()+datetime.timedelta(minutes=25)
                     logger.info('order confirm success.alipay url:%s\nupload data' % pay_data['alipay_url'])
 
                     return pay_data
