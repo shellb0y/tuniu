@@ -12,7 +12,7 @@ class OrderApiTest(unittest.TestCase):
         print req.json()
 
     def callback_test(self):
-        req = requests.get('http://op.yikao666.cn/JDTrainOpen/CallBackForTN?id=%d&success=%s' % (22404, 'true'))
+        req = requests.get('http://op.yikao666.cn/JDTrainOpen/CallBackForTN?order_id=%s&success=%s' % ('ec97e37c616b4a578559485468771398', 'true'))
         resp = req.json()
         self.assertEqual(resp['message'], u'操作成功')
 

@@ -103,7 +103,7 @@ class TrainOrderService:
             'departureCityCode': '200',
             'departDate': data['depart_date'], 'adultPrice': data['price']
         }, self.account['sessionid'], self.partner, self.cc)
-        #logger.debug('train order coupon resp:%s' % train_order_coupon_resp)
+        # logger.debug('train order coupon resp:%s' % train_order_coupon_resp)
 
         if train_order_coupon_resp['success'] and train_order_coupon_resp['data']['sortData']:
             coupon = train_order_coupon_resp['data']['sortData'][0]
@@ -116,7 +116,7 @@ class TrainOrderService:
             logger.error('trainticket order coupon not found')
             return False
 
-    def place_order(self, data, coupons):
+    def place_order(self, data, partner_order_id, coupons):
         if coupons:
             if not self.__lookup_coupon(data):
                 for id in coupons:
@@ -139,14 +139,16 @@ class TrainOrderService:
 
             logger.debug('order submit response:%s' % resp)
             if resp['success']:
-                pay_data['orderId'] = resp['data']['orderId']
+                pay_data['partner_order_id'] = partner_order_id
+                pay_data['tuniu_orderId'] = resp['data']['orderId']
                 pay_data['price'] = resp['data']['remainAmount']
 
                 logger.info(
-                    'order submit success,payid:%s,price:%s,confirming...' % (pay_data['orderId'], pay_data['price']))
+                    'order submit success,payid:%s,price:%s,confirming...' % (
+                    pay_data['tuniu_orderId'], pay_data['price']))
 
                 resp = http_handler.pay.confirm(
-                    {'userId': self.account['userid'], 'orderId': pay_data['orderId'], 'price': pay_data['price'],
+                    {'userId': self.account['userid'], 'orderId': pay_data['tuniu_orderId'], 'price': pay_data['price'],
                      'sessionId': self.account['sessionid'],
                      'termId': termId})
                 logger.debug('order confirm response:%s' % resp)
@@ -155,7 +157,7 @@ class TrainOrderService:
                     pay_data['finalOrderId'] = resp['data']['finalOrderId']
                     pay_data['alipay_url'] = resp['data']['url']
                     pay_data['account'] = json.dumps(self.account)
-                    pay_data['timeout'] = datetime.datetime.now()+datetime.timedelta(minutes=25)
+                    pay_data['timeout'] = str(datetime.datetime.now() + datetime.timedelta(minutes=25))
                     logger.info('order confirm success.alipay url:%s\nupload data' % pay_data['alipay_url'])
 
                     return pay_data

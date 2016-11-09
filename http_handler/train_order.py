@@ -69,9 +69,10 @@ def add_order(sessionid, partner, cc, data):
                  "adultPrice": data['price'],
                  "isTransferToDispatchTicket": 0, "isExcess": 0, "isDispatchTicket": 0, "isCouponValuable": 0,
                  "insuranceResourceId": 0, "insurancePrice": 0, "childCount": 0, "ministryRailwaysId": 0,
-                 "travelCouponUseValue": 0, "useTrainUniquePromotion": len(data['promotionList']) > 0, "adultCount": 1,
+                 "travelCouponUseValue": 0, "useTrainUniquePromotion": False, "adultCount": 1,
+                 # len(data['promotionList']) > 0
                  "acceptStandingTicket": False}),
-                'c': json.dumps({"v": "8.1.6", "ct": 20, "dt": 1, "ov": 1, "p": partner, "cc": cc})}
+                'c': json.dumps({"v": "9.0.0", "ct": 20, "dt": 1, "ov": 1, "p": partner, "cc": cc})}
 
             req = requests.get('http://m.tuniu.com/api/train/order/AddOrder', params)
             logger.debug('GET %s' % req.url)

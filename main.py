@@ -13,8 +13,11 @@ import traceback
 #                        "password": "734206"})
 # adsl_service.set_adsl()
 
+partner_order_id = ''
+order_id = ''
 
 try:
+    logger.info('-----------------------')
     logger.info('get tuniu account')
     req = requests.get(app_conf.get_account_tuniu)
     if req.status_code == 200:
@@ -54,7 +57,8 @@ try:
 
         data = {
             'from': resp['from_station'], 'to': resp['to_station'],
-            'depart_date': resp['train_date'].replace('00:00:00', ''), 'price': resp['ticket_price'], 'seatName': seatName,
+            'depart_date': resp['train_date'].replace('00:00:00', ''), 'price': resp['ticket_price'],
+            'seatName': seatName,
             'train_number': resp['checi'], 'phone': json.loads(account['data'])['username'],
             'touristList': [
                 {"birthday": resp['passport_se_no'][6:10] + '-' + resp['passport_se_no'][10:12] + '-'
@@ -65,7 +69,7 @@ try:
         }
 
         logger.debug("READY:%s" % data)
-        resp = trainService.place_order(data, [194, 176])
+        resp = trainService.place_order(data, partner_order_id, [194, 176])
         logger.info('ALL SUCCESS.')
 
         # logger.info('partner callback 1# begin.')
