@@ -77,7 +77,6 @@ try:
         # resp = req.json()
         # logger.info(resp)
 
-        # TODO:TEST
         logger.info('mobilepay callback')
         req = requests.put(app_conf.set_order_status % (order_id, u'下单成功'), data=json.dumps(resp),
                            headers={'Content-Type': 'application/json'})

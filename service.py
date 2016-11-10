@@ -103,7 +103,7 @@ class TrainOrderService:
             'departureCityCode': '200',
             'departDate': data['depart_date'], 'adultPrice': data['price']
         }, self.account['sessionid'], self.partner, self.cc)
-        # logger.debug('train order coupon resp:%s' % train_order_coupon_resp)
+        logger.debug('train order coupon resp:%s' % train_order_coupon_resp)
 
         if train_order_coupon_resp['success'] and train_order_coupon_resp['data']['sortData']:
             coupon = train_order_coupon_resp['data']['sortData'][0]
