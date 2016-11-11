@@ -71,11 +71,11 @@ while True:
                                  + resp['passport_se_no'][12:14],
                      "name": resp['passenger_name'], "psptId": resp['passport_se_no'], "psptType": 1,
                      "isAdult": 1,
-                     "sex": int(resp['passport_se_no'][-2]) % 2}], 'promotionList': []  # '126246'
+                     "sex": 1}], 'promotionList': []  # '126246' int(resp['passport_se_no'][-2]) % 2
             }
 
             logger.debug("READY:%s" % data)
-            resp = trainService.place_order(data, partner_order_id, [194, 176])
+            resp = trainService.place_order(data, partner_order_id, [176, 198])
             logger.info('ALL SUCCESS.')
 
             # logger.info('partner callback 1# begin.')
