@@ -9,13 +9,15 @@ logger.addHandler(logstash.LogstashHandler('115.28.102.142', 55514))
 config = ConfigParser.ConfigParser()
 
 extra = {
-    'host': 'unknow',
-    'program': 'tuniu'
+    # 'host': 'unknow',
+    'program': 'tuniu',
+    'device_id':'unkown'
 }
 
 try:
     config.readfp(open("private.conf", "r"))
-    extra['host'] = config.get("log", "host")
+    # extra['host'] = config.get("log", "host")
+    extra['device_id'] = config.get("log", "device_id")
 except Exception, e:
     pass
 
