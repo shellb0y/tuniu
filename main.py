@@ -113,5 +113,5 @@ while True:
                                headers={'Content-Type': 'application/json'})
             logger.info(req.text)
 
-        sleep(PLACEORDERINTERVAL)
+        sleep(5)
         continue

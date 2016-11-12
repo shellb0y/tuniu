@@ -8,7 +8,7 @@ import requests
 import app_conf
 import uuid
 import datetime
-
+import random
 
 class TrainOrderService:
     def __init__(self, account, acountid):
@@ -103,10 +103,10 @@ class TrainOrderService:
             'departureCityCode': '200',
             'departDate': data['depart_date'], 'adultPrice': data['price']
         }, self.account['sessionid'], self.partner, self.cc)
-        logger.debug('train order coupon resp:%s' % train_order_coupon_resp)
+        #logger.debug('train order coupon resp:%s' % train_order_coupon_resp)
 
         if train_order_coupon_resp['success'] and train_order_coupon_resp['data']['sortData']:
-            coupon = train_order_coupon_resp['data']['sortData'][0]
+            coupon = train_order_coupon_resp['data']['sortData'][random.randint(0,len(train_order_coupon_resp['data']['sortData']))-1]
             logger.info('find it.use %s' % coupon['number'])
             data['promotionList'].append(coupon['number'])
             data['price'] -= coupon['reduction']

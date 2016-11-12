@@ -74,6 +74,9 @@ def add_order(sessionid, partner, cc, data):
                  "acceptStandingTicket": False}),
                 'c': json.dumps({"v": "9.0.0", "ct": 20, "dt": 1, "ov": 1, "p": partner, "cc": cc})}
 
+            s = requests.session()
+            s.keep_alive = False
+
             req = requests.get('http://m.tuniu.com/api/train/order/AddOrder', params)
             logger.debug('GET %s' % req.url)
             try:

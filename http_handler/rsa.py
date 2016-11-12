@@ -5,7 +5,11 @@ from my_exception import *
 
 
 def encode(data):
-    req = requests.get(app_conf.rsa_encode % data)
+    # s = requests.session()
+    # s.keep_alive = False
+
+    req = requests.get(app_conf.rsa_encode % data, headers={'Keep-Alive': "false"})
+
     logger.debug('GET %s' % (req.url))
     try:
         resp = req.text

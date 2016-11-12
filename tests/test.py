@@ -4,6 +4,7 @@
 import traceback
 import uuid
 import datetime
+import random
 
 try:
     raise ValueError('test',{'a':'m'})
@@ -23,7 +24,7 @@ print 1 and None or '2'
 # # print  requests.get('https://github.com', verify=True)
 # #
 # req = requests.get('https://kyfw.12306.cn/otn/resources/js/framework/station_name.js?station_version=1.8971', verify=False)
-# print req.text
+# print req.text320586199701155420
 
 a={'a':1,'b':'1'}
 if not a.has_key('b') or not a['b']:
@@ -32,4 +33,4 @@ else:
     print 'yes'
 
 
-print  str(datetime.datetime.now()+datetime.timedelta(minutes=25))
+print  random.randint(0,1)
