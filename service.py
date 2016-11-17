@@ -5,7 +5,6 @@ import base_data
 import json
 import log_ex as logger
 import requests
-import app_conf
 import uuid
 import datetime
 import random
@@ -25,7 +24,7 @@ class TrainOrderService:
         account['userId'] = self.get_user_id()
 
         logger.info('update account data')
-        req = requests.put(app_conf.put_account % acountid, data=json.dumps(account),
+        req = requests.put(base_data.put_account % acountid, data=json.dumps(account),
                            headers={'Content-Type': 'application/json'})
         logger.debug('put %s %s' % (req.url, account))
         logger.debug('resp:%s' % req.text)
@@ -129,7 +128,7 @@ class TrainOrderService:
 
         if resp['success']:
             termId = str(uuid.uuid1())
-            pay_data = {'bizOrderId': resp['data']['orderId'], 'price': data['price'],}
+            pay_data = {'bizOrderId': resp['data']['orderId'], 'price': data['price']}
             logger.info('add order success.id:%s.submiting...' % pay_data['bizOrderId'])
 
             resp = http_handler.pay.submit(
@@ -142,29 +141,32 @@ class TrainOrderService:
                 pay_data['partner_order_id'] = partner_order_id
                 pay_data['tuniu_orderId'] = resp['data']['orderId']
                 pay_data['price'] = resp['data']['remainAmount']
+                pay_data['account'] = json.dumps(self.account)
+                pay_data['timeout'] = str(datetime.datetime.now() + datetime.timedelta(minutes=25))
 
                 logger.info(
                     'order submit success,payid:%s,price:%s,confirming...' % (
                     pay_data['tuniu_orderId'], pay_data['price']))
 
-                resp = http_handler.pay.confirm(
-                    {'userId': self.account['userid'], 'orderId': pay_data['tuniu_orderId'], 'price': pay_data['price'],
-                     'sessionId': self.account['sessionid'],
-                     'termId': termId})
-                logger.debug('order confirm response:%s' % resp)
-
-                if resp['success']:
-                    pay_data['finalOrderId'] = resp['data']['finalOrderId']
-                    pay_data['alipay_url'] = resp['data']['url']
-                    pay_data['account'] = json.dumps(self.account)
-                    pay_data['timeout'] = str(datetime.datetime.now() + datetime.timedelta(minutes=25))
-                    logger.info('order confirm success.alipay url:%s\nupload data' % pay_data['alipay_url'])
-
+                if base_data.payChannel == 8:
                     return pay_data
                 else:
-                    err = 'order confirm faild'
-                    logger.error(err)
-                    raise ValueError(err)
+                    resp = http_handler.pay.confirm(
+                        {'userId': self.account['userid'], 'orderId': pay_data['tuniu_orderId'], 'price': pay_data['price'],
+                         'sessionId': self.account['sessionid'],
+                         'termId': termId})
+                    logger.debug('order confirm response:%s' % resp)
+
+                    if resp['success']:
+                        pay_data['finalOrderId'] = resp['data']['finalOrderId']
+                        pay_data['url'] = resp['data']['url']
+                        logger.info('order confirm success.alipay url:%s\nupload data' % pay_data['url'])
+
+                        return pay_data
+                    else:
+                        err = 'order confirm faild'
+                        logger.error(err)
+                        raise ValueError(err)
 
             else:
                 err = 'order submit faild'

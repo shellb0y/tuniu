@@ -5,6 +5,8 @@ import traceback
 import uuid
 import datetime
 import random
+import time
+import requests
 
 try:
     raise ValueError('test',{'a':'m'})
@@ -32,5 +34,23 @@ if not a.has_key('b') or not a['b']:
 else:
     print 'yes'
 
+while True:
+    time.sleep(2)
+    try:
+        raise Exception('test')
+    except Exception,e:
+        print e
+        try:
+            raise Exception('test')
+            continue
+        except Exception, e:
+            print e
+    finally:
+        raise Exception('finally exception')
+
+
+
 
 print  random.randint(0,1)
+
+print 'http://op.yikao666.cn/JDTrainOpen/CallBackForTNLock?tnOrderno=%s&userName=%s&password=%s&sessionid=%s&order_id=%s&success=%s&amount=%.1f'%('1','2','3','4','5','6',23.4)

@@ -7,6 +7,7 @@ import base64
 from my_exception import *
 import log_ex as logger
 import rsa
+import base_data
 
 
 # POST /fmp-web/app/order/submit HTTP/1.1
@@ -88,7 +89,8 @@ def submit(parms):
 def confirm(parms):
     headers = {'User-Agent': 'TuNiuApp/8.1.6/Dalvik/1.6.0 (Linux; U; Android 4.2.2)',
                'baseParams': base64.b64encode(json.dumps({"fingerPrint": "", "sessionId": parms['sessionId'],
-                                                          "termAppVersion": "1.3.9", "termSysVersion": "4.4.2",
+                                                          "termAppVersion": "1.4.0", "termSysVersion": "4.4.2",
+                                                          "majorAppVersion": "9.0.0",
                                                           "termModel": "",
                                                           "appType": 2, "platformId": 1, "network": "WIFI",
                                                           "termId": parms['termId']})),
@@ -96,10 +98,10 @@ def confirm(parms):
 
     url = 'https://jr.tuniu.com/fmp-web/pay/confirm'
     data = {"downPaymentFlag": 0, "encodeTotalAmount": rsa.encode(parms['price']), "orderId": parms['orderId'],
-            "orderType": 1, "payChannel": 9, "payMethod": 11, "sign": "", "userId": parms['userId']}
+            "orderType": 1, "payChannel": base_data.payChannel, "payMethod": 11, "sign": "", "userId": parms['userId']}
 
-    sign_data = 'downPaymentFlag=0&encodeTotalAmount=%s&orderId=%s&orderType=1&payChannel=9&payMethod=11&userId=%d' % (
-        data['encodeTotalAmount'], data['orderId'], data['userId'])
+    sign_data = 'downPaymentFlag=0&encodeTotalAmount=%s&orderId=%s&orderType=1&payChannel=%d&payMethod=11&userId=%d' % (
+        data['encodeTotalAmount'], data['orderId'], base_data.payChannel, data['userId'])
     sign_data = sign_data + '&*()%sd76@#$Dfs^YsfUJKDs'
     data['sign'] = hashlib.md5(sign_data).hexdigest()
     base64_data = base64.b64encode(json.dumps(data))

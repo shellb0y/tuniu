@@ -2,7 +2,7 @@
 
 # import adsl
 import service
-import app_conf
+import base_data
 import log_ex as logger
 import requests
 import json
@@ -15,6 +15,7 @@ from time import ctime, sleep
 # adsl_service.set_adsl()
 
 PLACEORDERINTERVAL = 30
+FAILDWAITING = 180
 
 while True:
     partner_order_id = ''
@@ -23,21 +24,29 @@ while True:
     try:
         logger.info('-----------------------')
         logger.info('get tuniu account')
-        req = requests.get(app_conf.get_account_tuniu)
+        req = requests.get(base_data.get_account_tuniu)
         if req.status_code == 200:
             account = req.json()
             logger.debug('account:%s' % json.dumps(account))
             trainService = service.TrainOrderService(json.loads(account['data']), account['id'])
 
-            logger.info('get train data from %s' % app_conf.get_train_order)
-            req = requests.get(app_conf.get_train_order)
-            resp = req.json()
-            logger.debug('response:%s' % resp)
+            logger.info('get train data from %s' % base_data.get_train_order)
+            req = requests.get(base_data.get_train_order)
+            resp = ''
+            try:
+                resp = req.json()
+            except Exception, e:
+                logger.error('get train data error')
+                sleep(5)
+                continue
 
+            logger.debug('response:%s' % resp)
             partner_order_id = resp['order_id']
 
             logger.info('save train data')
-            req = requests.post(app_conf.save_order, data=json.dumps(resp),
+            resp['pay_channel'] = base_data.payChannel
+            resp['target'] = 'tn'
+            req = requests.post(base_data.save_order, data=json.dumps(resp),
                                 headers={'Content-Type': 'application/json'})
             order_id = req.text
 
@@ -75,43 +84,61 @@ while True:
             }
 
             logger.debug("READY:%s" % data)
-            resp = trainService.place_order(data, partner_order_id, [176, 198])
+            resp = trainService.place_order(data, partner_order_id, [210])
             logger.info('ALL SUCCESS.')
 
             # logger.info('partner callback 1# begin.')
-            # req = requests.get(app_conf.train_order_callback % (partner_order_id, 'true'))
+            # req = requests.get(base_data.train_order_callback % (partner_order_id, 'true'))
             # resp = req.json()
             # logger.info(resp)
 
             logger.info('mobilepay callback')
-            req = requests.put(app_conf.set_order_status % (order_id, u'下单成功'), data=json.dumps(resp),
+            req = requests.put(base_data.set_order_status % (order_id, u'下单成功'), data=json.dumps(resp),
                                headers={'Content-Type': 'application/json'})
             logger.info(req.text)
+
+            if base_data.payChannel == 8:
+                req = requests.get(
+                    'http://op.yikao666.cn/JDTrainOpen/CallBackForTNLock?tnOrderno=%s&userName=%s&password=%s&sessionid=%s&order_id=%s&success=%s&amount=%.1f' % (
+                        resp['tuniu_orderId'], resp['account']['username'], resp['password'], resp['sessionid'],
+                        partner_order_id, 'true', resp['tuniu_orderId']))
+                logger.info(req.text)
 
             sleep(PLACEORDERINTERVAL)
         elif req.status_code == 204:
             logger.error('not more tuniu account,sleep 5m')
-            sleep(PLACEORDERINTERVAL)
+            sleep(300)
             continue
         else:
             logger.error('get tuniu account falid')
-            sleep(PLACEORDERINTERVAL)
+            sleep(FAILDWAITING)
             continue
 
     except Exception, e:
         logger.error(traceback.format_exc())
-        if partner_order_id:
-            logger.info('partner callback 1# begin.')
-            req = requests.get(app_conf.train_order_callback % (partner_order_id, 'false'))
-            resp = req.json()
-            logger.info(resp)
-
         if order_id:
-            logger.info('mobilepay callback 2#')
-            req = requests.put(app_conf.set_order_status % (order_id, u'下单失败'),
-                               data=json.dumps({'error': traceback.format_exc()}),
-                               headers={'Content-Type': 'application/json'})
-            logger.info(req.text)
-
-        sleep(5)
+            logger.info('mobilepay callback 1#')
+            try:
+                req = requests.put(base_data.set_order_status % (order_id, u'下单失败'),
+                                   data=json.dumps({'error': traceback.format_exc()}),
+                                   headers={'Content-Type': 'application/json'})
+                logger.info(req.text)
+                sleep(5)
+            except Exception, e:
+                logger.error('mobilepay callback faild')
+                sleep(FAILDWAITING)
         continue
+    finally:
+        if partner_order_id:
+            logger.info('partner callback 2# begin.')
+            try:
+                if base_data.payChannel == 8:
+                    #TODO:问刘志建参数可否为空
+                    pass
+                else:
+                    req = requests.get(base_data.train_order_callback % (partner_order_id, 'false'))
+                    resp = req.text
+                    logger.info(resp)
+            except Exception, e:
+                logger.error('partner callback faild')
+                sleep(FAILDWAITING)

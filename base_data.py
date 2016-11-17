@@ -7,10 +7,17 @@ import json
 import re
 import log_ex as logger
 
+get_train_order = 'http://op.yikao666.cn/JDTrainOpen/getOrderForTN'
+train_order_callback = 'http://op.yikao666.cn/JDTrainOpen/CallBackForTN?order_id=%s&success=%s'
+save_order = 'http://localhost:8000/api/mobilepay/order'
+set_order_status = 'http://localhost:8000/api/mobilepay/order/status/%s/%s'
+get_account_tuniu = 'http://localhost:8000/api/mobilepay/account/tuniu'
+put_account = 'http://localhost:8000/api/mobilepay/account/%d'
+rsa_encode = 'http://115.28.102.142:8081/api/rsa/encode/%s'
+payChannel = 10
 
 def get_partner():
     return random.randint(15000, 19000)
-
 
 def get_cc():
     return random.randint(1500, 2500)
@@ -154,8 +161,9 @@ def get_user_agent():
         'Mozilla/5.0 (SymbianOS/9.3; U; Series60/3.2 NokiaE75-1/110.48.125 Profile/MIDP-2.1 Configuration/CLDC-1.1 ) AppleWebKit/413 (KHTML, like Gecko) Safari/413',
         'Mozilla/5.0 (SymbianOS/9.4; U; Series60/5.0 Nokia5800d-1/21.0.025; Profile/MIDP-2.1 Configuration/CLDC-1.1 ) AppleWebKit/413 (KHTML, like Gecko) Safari/413',
         'Mozilla/5.0 (SymbianOS/9.4; Series60/5.0 NokiaN97-1/12.0.024; Profile/MIDP-2.1 Configuration/CLDC-1.1; en-us) AppleWebKit/525 (KHTML, like Gecko) BrowserNG/7.1.12344',
-        ]
+    ]
     return agents[random.randint(0, len(agents))]
+
 
 def get_random_letter_number(n=16):
     token = []

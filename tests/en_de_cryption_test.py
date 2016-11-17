@@ -2,14 +2,14 @@
 
 import unittest
 import hashlib
-import app_conf
+import base_data
 import base64
 import requests
 
 
 class EnDeCryptionTest(unittest.TestCase):
     def md5_test(self):
-        req = requests.get(app_conf.rsa_encode % '573.0')
+        req = requests.get(base_data.rsa_encode % '573.0')
         resp = req.text
         print resp
         encodeTotalAmount = resp
