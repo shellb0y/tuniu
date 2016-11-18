@@ -14,7 +14,7 @@ set_order_status = 'http://localhost:8000/api/mobilepay/order/status/%s/%s'
 get_account_tuniu = 'http://localhost:8000/api/mobilepay/account/tuniu'
 put_account = 'http://localhost:8000/api/mobilepay/account/%d'
 rsa_encode = 'http://115.28.102.142:8081/api/rsa/encode/%s'
-payChannel = 10
+payChannel = 8
 
 def get_partner():
     return random.randint(15000, 19000)

@@ -8,6 +8,8 @@ import requests
 import uuid
 import datetime
 import random
+import time
+import base64
 
 class TrainOrderService:
     def __init__(self, account, acountid):
@@ -141,7 +143,7 @@ class TrainOrderService:
                 pay_data['partner_order_id'] = partner_order_id
                 pay_data['tuniu_orderId'] = resp['data']['orderId']
                 pay_data['price'] = resp['data']['remainAmount']
-                pay_data['account'] = json.dumps(self.account)
+                pay_data['account'] = self.account
                 pay_data['timeout'] = str(datetime.datetime.now() + datetime.timedelta(minutes=25))
 
                 logger.info(
@@ -149,6 +151,10 @@ class TrainOrderService:
                     pay_data['tuniu_orderId'], pay_data['price']))
 
                 if base_data.payChannel == 8:
+                    pay_data[
+                        'cookie'] = 'PageSwitch=2,%s; _tacau=MCwzYTY0MTU4Ni1mZDI3LTQyMWUtZDI3NS1kNGI1ZDEzNDU1ODcs; _tacz2=taccsr=(direct)|tacccn=(none)|taccmd=(none)|taccct=(none)|taccrt=(none); _taca=1477397184786.1477397184786.1477397184786.1; _tacc=1; SERVERID=dnionD; app_imei=%s; ov=1; tuniuuser_id=%d;  TUNIUmuser=%s; sessionId=MQ==; token=%s; appVersion=9.0.0; tuniu_partner=MTU0NDcsMCwsOWIxMTFkNWY3NGQ1NmQ1NjdhNjEyZDQzYjEzYjVlYjI=; deviceType=1; SsoSession=%s; clientType=20; page_flag=; __utma=1.1665134217.1477397186.1477397186.1477397188.2; __utmb=1.4.10.1477397188; __utmc=1; __utmz=1.1477397188.2.2.utmcsr=morecoupon|utmccn=(not set)|utmcmd=couponcenter; _tact=NTExZDJiZTYtNGUxOS05Y2E2LWJlNjEtMTM0ZDMwYmMwNDRh;' % (
+                        str(time.time()).replace('.', ''), base_data.get_random_number(), self.account['userid'], self.account['sessionid'],
+                        base64.b64encode(base_data.get_random_letter_number()), self.account['sessionid'])
                     return pay_data
                 else:
                     resp = http_handler.pay.confirm(

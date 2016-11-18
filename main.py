@@ -99,9 +99,9 @@ while True:
 
             if base_data.payChannel == 8:
                 req = requests.get(
-                    'http://op.yikao666.cn/JDTrainOpen/CallBackForTNLock?tnOrderno=%s&userName=%s&password=%s&sessionid=%s&order_id=%s&success=%s&amount=%.1f' % (
-                        resp['tuniu_orderId'], resp['account']['username'], resp['password'], resp['sessionid'],
-                        partner_order_id, 'true', resp['tuniu_orderId']))
+                    'http://op.yikao666.cn/JDTrainOpen/CallBackForTNLock?tnOrderno=%s&userName=%s&password=%s&sessionid=%s&order_id=%s&success=%s&amount=%s&cookie=%s' % (
+                        resp['bizOrderId'], resp['account']['username'], resp['account']['password'], resp['account']['sessionid'],
+                        partner_order_id, 'true', resp['price'], resp['cookie']))
                 logger.info(req.text)
 
             sleep(PLACEORDERINTERVAL)
@@ -127,14 +127,14 @@ while True:
             except Exception, e:
                 logger.error('mobilepay callback faild')
                 sleep(FAILDWAITING)
-        continue
-    finally:
+
         if partner_order_id:
             logger.info('partner callback 2# begin.')
             try:
                 if base_data.payChannel == 8:
-                    #TODO:问刘志建参数可否为空
-                    pass
+                    req = requests.get(
+                        'http://op.yikao666.cn/JDTrainOpen/CallBackForTNLock?order_id=%s&success=false' % partner_order_id)
+                    logger.info(req.text)
                 else:
                     req = requests.get(base_data.train_order_callback % (partner_order_id, 'false'))
                     resp = req.text
@@ -142,3 +142,4 @@ while True:
             except Exception, e:
                 logger.error('partner callback faild')
                 sleep(FAILDWAITING)
+
