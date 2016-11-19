@@ -14,7 +14,7 @@ from time import ctime, sleep
 #                        "password": "734206"})
 # adsl_service.set_adsl()
 
-PLACEORDERINTERVAL = 30
+PLACEORDERINTERVAL = 5
 FAILDWAITING = 180
 
 while True:
@@ -54,7 +54,7 @@ while True:
                 logger.info('save order success')
             else:
                 logger.error('save order faild,exit')
-                sleep(PLACEORDERINTERVAL)
+                sleep(FAILDWAITING)
                 continue
 
             logger.info('prepare the orders data')
@@ -106,8 +106,8 @@ while True:
 
             sleep(PLACEORDERINTERVAL)
         elif req.status_code == 204:
-            logger.error('not more tuniu account,sleep 5m')
-            sleep(300)
+            logger.error('not more tuniu account')
+            sleep(FAILDWAITING)
             continue
         else:
             logger.error('get tuniu account falid')
@@ -123,7 +123,6 @@ while True:
                                    data=json.dumps({'error': traceback.format_exc()}),
                                    headers={'Content-Type': 'application/json'})
                 logger.info(req.text)
-                sleep(5)
             except Exception, e:
                 logger.error('mobilepay callback faild')
                 sleep(FAILDWAITING)
