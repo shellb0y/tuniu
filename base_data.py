@@ -9,11 +9,19 @@ import log_ex as logger
 
 get_train_order = 'http://op.yikao666.cn/JDTrainOpen/getOrderForTN'
 train_order_callback = 'http://op.yikao666.cn/JDTrainOpen/CallBackForTN?order_id=%s&success=%s'
-save_order = 'http://115.28.102.142:8000/api/mobilepay/order'
-set_order_status = 'http://115.28.102.142:8000/api/mobilepay/order/status/%s/%s'
-get_account_tuniu = 'http://115.28.102.142:8000/api/mobilepay/account/tuniu'
-put_account = 'http://115.28.102.142:8000/api/mobilepay/account/%d'
 rsa_encode = 'http://115.28.102.142:8081/api/rsa/encode/%s'
+
+# save_order = 'http://115.28.102.142:8000/api/mobilepay/order'
+# set_order_status = 'http://115.28.102.142:8000/api/mobilepay/order/status/%s/%s'
+# get_account_tuniu = 'http://115.28.102.142:8000/api/mobilepay/account/tuniu'
+# put_account = 'http://115.28.102.142:8000/api/mobilepay/account/%d'
+# put_account_ordercount = 'http://115.28.102.142:8000/api/mobilepay/account/ordercount/%s'
+save_order = 'http://localhost:8000/api/mobilepay/order'
+set_order_status = 'http://localhost:8000/api/mobilepay/order/status/%s/%s'
+get_account_tuniu = 'http://localhost:8000/api/mobilepay/account/tuniu'
+put_account = 'http://localhost:8000/api/mobilepay/account/%d'
+put_account_ordercount = 'http://localhost:8000/api/mobilepay/account/ordercount/%s'
+
 payChannel = 8
 
 def get_partner():

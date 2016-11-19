@@ -97,6 +97,10 @@ while True:
                                headers={'Content-Type': 'application/json'})
             logger.info(req.text)
 
+            logger.info('put account ordercount')
+            req = requests.put(base_data.put_account_ordercount % account['id'])
+            logger.info(req.text)
+
             if base_data.payChannel == 8:
                 req = requests.get(
                     'http://op.yikao666.cn/JDTrainOpen/CallBackForTNLock?tnOrderno=%s&userName=%s&password=%s&sessionid=%s&order_id=%s&success=%s&amount=%s&cookie=%s' % (

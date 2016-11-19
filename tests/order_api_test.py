@@ -16,6 +16,12 @@ class OrderApiTest(unittest.TestCase):
         resp = req.json()
         self.assertEqual(resp['message'], u'操作成功')
 
+    def put_account_ordercount_test(self):
+        put_account_ordercount = 'http://localhost:8000/api/mobilepay/account/ordercount/%s'
+        req = requests.put(put_account_ordercount % 1)
+        resp = req.text
+        self.assertEqual(resp, '1')
+
     def callback_lock_test(self):
         req = requests.get(
             'http://op.yikao666.cn/JDTrainOpen/CallBackForTNLock?tnOrderno=14966527&userName=13189940634&password=s031161&order_id=%s&success=%s&amount=23.5' % (
