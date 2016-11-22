@@ -14,7 +14,7 @@ from time import ctime, sleep
 #                        "password": "734206"})
 # adsl_service.set_adsl()
 
-PLACEORDERINTERVAL = 5
+PLACEORDERINTERVAL = 20
 FAILDWAITING = 180
 
 while True:
