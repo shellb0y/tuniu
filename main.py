@@ -23,39 +23,40 @@ while True:
 
     try:
         logger.info('-----------------------')
+
+        logger.info('get train data from %s' % base_data.get_train_order)
+        req = requests.get(base_data.get_train_order)
+        resp = ''
+        try:
+            resp = req.json()
+        except Exception, e:
+            logger.error('get train data error')
+            sleep(5)
+            continue
+
+        logger.debug('response:%s' % resp)
+        partner_order_id = resp['order_id']
+
+        logger.info('save train data')
+        resp['pay_channel'] = base_data.payChannel
+        resp['target'] = 'tn'
+        req = requests.post(base_data.save_order, data=json.dumps(resp),
+                            headers={'Content-Type': 'application/json'})
+        order_id = req.text
+
+        if order_id and req.status_code == 200:
+            logger.info('save order success')
+        else:
+            logger.error('save order faild,exit')
+            sleep(FAILDWAITING)
+            continue
+
         logger.info('get tuniu account')
         req = requests.get(base_data.get_account_tuniu)
         if req.status_code == 200:
             account = req.json()
             logger.debug('account:%s' % json.dumps(account))
             trainService = service.TrainOrderService(json.loads(account['data']), account['id'])
-
-            logger.info('get train data from %s' % base_data.get_train_order)
-            req = requests.get(base_data.get_train_order)
-            resp = ''
-            try:
-                resp = req.json()
-            except Exception, e:
-                logger.error('get train data error')
-                sleep(5)
-                continue
-
-            logger.debug('response:%s' % resp)
-            partner_order_id = resp['order_id']
-
-            logger.info('save train data')
-            resp['pay_channel'] = base_data.payChannel
-            resp['target'] = 'tn'
-            req = requests.post(base_data.save_order, data=json.dumps(resp),
-                                headers={'Content-Type': 'application/json'})
-            order_id = req.text
-
-            if order_id and req.status_code == 200:
-                logger.info('save order success')
-            else:
-                logger.error('save order faild,exit')
-                sleep(FAILDWAITING)
-                continue
 
             logger.info('prepare the orders data')
 
