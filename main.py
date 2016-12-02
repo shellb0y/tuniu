@@ -54,7 +54,7 @@ while True:
             logger.error('save order faild,exit')
             sleep(FAILDWAITING)
             continue
-            
+
         logger.info('get tuniu account')
         req = requests.get(base_data.get_account_tuniu)
         if req.status_code == 200:
