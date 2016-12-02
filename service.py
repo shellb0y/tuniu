@@ -17,6 +17,7 @@ class TrainOrderService:
         self.partner = base_data.get_partner()
         self.cc = base_data.get_cc()
         self.account = account
+        self.accountid= acountid
 
         logger.info('check session by get user id %s' % account)
 
@@ -55,6 +56,11 @@ class TrainOrderService:
                 return self.account['sessionid']
             else:
                 err = '2#.login faild'
+
+                logger.info('account cant use,send to server')
+                resp = requests.put(base_data.put_aacount_cantuse % self.acountid)
+                logger.info(resp.text)
+
                 logger.error(err)
                 raise ValueError(err)
         else:
@@ -156,12 +162,13 @@ class TrainOrderService:
                     'order submit success,payid:%s,price:%s,confirming...' % (
                         pay_data['tuniu_orderId'], pay_data['price']))
 
-                #--回调优惠券金额
+                # --回调优惠券金额
                 headers = {'content-type': 'application/json; charset=UTF-8',
                            'User-Agent': 'TuNiuApp/8.1.6/Dalvik/1.6.0 (Linux; U; Android 4.2.2)',
                            'cookie': cookie}
                 req = requests.get(
-                    'http://m.tuniu.com/userOrder/trainTicketOrderDetailAjax?data=%7B%22orderId%22%3A%22' + str(pay_data['bizOrderId'])
+                    'http://m.tuniu.com/userOrder/trainTicketOrderDetailAjax?data=%7B%22orderId%22%3A%22' + str(
+                        pay_data['bizOrderId'])
                     + '%22%2C%22orderType%22%3A%2238%22%7D', headers=headers)
                 resp = req.json()
                 logger.debug('get order deails response:%s' % resp)
@@ -169,11 +176,12 @@ class TrainOrderService:
                 if resp['success']:
                     req = requests.get('http://op.yikao666.cn/JDTrainOpen/CallBackForTN?'
                                        'order_id=%s&success=true&amount=%s&coupon_price=%s' % (
-                                       pay_data['partner_order_id'], pay_data['price'], resp['data']['promotionPrice']))
+                                           pay_data['partner_order_id'], pay_data['price'],
+                                           resp['data']['promotionPrice']))
                     logger.info('callback promotionPrice:%s' % req.text)
                 else:
                     logger.error('get order details faild')
-                #回调优惠券金额--
+                # 回调优惠券金额--
 
                 if base_data.payChannel == 8:
                     pay_data['cookie'] = cookie
