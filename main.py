@@ -12,7 +12,6 @@ from time import ctime, sleep
 # adsl_service = adsl.Adsl({"name": u"宽带连接",
 #                        "username": "057474432953",
 #                        "password": "734206"})
-# adsl_service.set_adsl()
 
 PLACEORDERINTERVAL = 20
 FAILDWAITING = 180
@@ -58,6 +57,7 @@ while True:
         if req.status_code == 200:
             account = req.json()
             logger.debug('account:%s' % json.dumps(account))
+            # adsl_service.reconnect()
             trainService = service.TrainOrderService(json.loads(account['data']), account['id'])
 
             logger.info('prepare the orders data')
@@ -107,7 +107,7 @@ while True:
             if base_data.payChannel == 8:
                 req = requests.get(
                     'http://op.yikao666.cn/JDTrainOpen/CallBackForTNLock?tnOrderno=%s&userName=%s&password=%s&sessionid=%s&order_id=%s&success=%s&amount=%s&cookie=%s' % (
-                        resp['bizOrderId'], resp['account']['username'], resp['account']['password'], resp['account']['sessionid'],
+                        resp['bizOrderId'], resp['account']['username'], resp['account']['password'], resp['account']['sessionid']+','+resp['account']['userid'],
                         partner_order_id, 'true', resp['price'], resp['cookie']))
                 logger.info(req.text)
 

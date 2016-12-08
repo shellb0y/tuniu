@@ -7,7 +7,7 @@ import random
 def get_order(name):
     sleep(random.randint(1,5))
     for i in range(10):
-        req = requests.get('http://localhost:8000/api/mobilepay/order/pay')
+        req = requests.get('http://localhost:8000/v1/api/test')
         if req.text:
             print '%s(%d):%s' % (name, i, req.text)
 
