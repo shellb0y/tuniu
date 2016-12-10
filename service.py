@@ -25,8 +25,7 @@ class TrainOrderService:
             logger.info('need login')
             self.login()
 
-        account['userId'] = self.get_user_id()
-
+        account['userid'] = self.get_user_id()
         logger.info('update account data')
         req = requests.put(base_data.put_account % acountid, data=json.dumps(account),
                            headers={'Content-Type': 'application/json'})
