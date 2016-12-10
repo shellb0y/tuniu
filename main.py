@@ -14,7 +14,7 @@ adsl_service = adsl.Adsl({"name": u"宽带连接".encode("gbk"),
                         "username": "057474432953",
                         "password": "734206"})
 
-PLACEORDERINTERVAL = 5
+PLACEORDERINTERVAL = 1
 FAILDWAITING = 180
 
 while True:
