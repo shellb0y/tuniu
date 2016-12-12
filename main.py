@@ -92,7 +92,7 @@ while True:
             }
 
             logger.debug("READY:%s" % data)
-            resp = trainService.place_order(data, partner_order_id, [210])
+            resp = trainService.place_order(data, partner_order_id, [])#[210]
             logger.info('ALL SUCCESS.')
 
             # logger.info('partner callback 1# begin.')
@@ -112,8 +112,8 @@ while True:
             if base_data.payChannel == 8:
                 req = requests.get(
                     'http://op.yikao666.cn/JDTrainOpen/CallBackForTNLock?tnOrderno=%s&userName=%s&password=%s&sessionid=%s&order_id=%s&success=%s&amount=%s&cookie=%s' % (
-                        resp['bizOrderId'], resp['account']['username'], resp['account']['password'], resp['account']['sessionid'],
-                        partner_order_id, 'true', resp['price'], resp['cookie']))
+                        resp['bizOrderId'], resp['account']['username'], resp['account']['password'], resp['account']['sessionid']+','+str(resp['account']['userid']),
+                        partner_order_id, 'true', resp['price'], account['cookie']))#resp['cookie']
                 logger.info(req.text)
             sleep(PLACEORDERINTERVAL)
         elif req.status_code == 204:
