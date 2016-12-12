@@ -9,7 +9,7 @@ import json
 import traceback
 from time import ctime, sleep
 
-# adsl_service = adsl.Adsl({"name": u"宽带连接",
+# adsl_service = adsl.Adsl({"name": u"宽带连接".encode("gbk"),
 #                        "username": "057474432953",
 #                        "password": "734206"})
 
