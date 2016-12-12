@@ -105,7 +105,7 @@ while True:
 
             if base_data.payChannel == 8:
                 req = requests.get(
-                    'http://op.yikao666.cn/JDTrainOpen/CallBackForTNLock?tnOrderno=%s&userName=%s&password=%s&sessionid=%s&order_id=%s&success=%s&amount=%s&cookie=%s&m_cookie' % (
+                    'http://op.yikao666.cn/JDTrainOpen/CallBackForTNLock?tnOrderno=%s&userName=%s&password=%s&sessionid=%s&order_id=%s&success=%s&amount=%s&cookie=%s&m_cookie=%s' % (
                         resp['bizOrderId'], resp['account']['username'], resp['account']['password'], resp['account']['sessionid']+','+resp['account']['userid'],
                         partner_order_id, 'true', resp['price'], account['cookie'],resp['cookie']))
                 logger.info(req.text)
