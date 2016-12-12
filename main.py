@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# import adsl
+import adsl
 import service
 import base_data
 import log_ex as logger
@@ -9,11 +9,11 @@ import json
 import traceback
 from time import ctime, sleep
 
-# adsl_service = adsl.Adsl({"name": u"宽带连接",
-#                        "username": "057474432953",
-#                        "password": "734206"})
+adsl_service = adsl.Adsl({"name": u"宽带连接",
+                        "username": "057474432953",
+                        "password": "734206"})
 
-PLACEORDERINTERVAL = 20
+PLACEORDERINTERVAL = 1
 FAILDWAITING = 180
 
 while True:
@@ -56,7 +56,7 @@ while True:
         if req.status_code == 200:
             account = req.json()
             logger.debug('account:%s' % json.dumps(account))
-            # adsl_service.reconnect()
+            adsl_service.reconnect()
             trainService = service.TrainOrderService(json.loads(account['data']), account['id'])
 
             logger.info('prepare the orders data')
