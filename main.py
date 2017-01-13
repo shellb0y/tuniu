@@ -57,73 +57,75 @@ while True:
                 sleep(FAILDWAITING)
                 continue
 
-        logger.info('get tuniu account')
-        req = requests.get(base_data.get_account_tuniu)
-        if req.status_code == 200:
-            account = req.json()
-            logger.debug('account:%s' % json.dumps(account))
-            adsl_service.reconnect()
-            trainService = service.TrainOrderService(json.loads(account['data']), account['id'])
-
-            logger.info('prepare the orders data')
-
-            if resp['zw_name'] == u'二等座':
-                seatName = u'二等'
-            elif resp['zw_name'] == u'一等座':
-                seatName = u'一等'
-            elif resp['zw_name'] == u'特等座':
-                seatName = u'特等'
-            elif resp['zw_name'] == u'商务座':
-                seatName = u'商务'
+        while True:
+            logger.info('get tuniu account')
+            req = requests.get(base_data.get_account_tuniu)
+            if req.status_code == 200:
+                account = req.json()
+                logger.debug('account:%s' % json.dumps(account))
+                break
+            elif req.status_code == 204:
+                logger.error('not more tuniu account')
+                sleep(FAILDWAITING)
+                continue
             else:
-                seatName = resp['zw_name']
+                logger.error('get tuniu account falid')
+                sleep(FAILDWAITING)
+                continue
 
-            data = {
-                'from': resp['from_station'], 'to': resp['to_station'],
-                'depart_date': resp['train_date'].replace('00:00:00', ''), 'price': resp['ticket_price'],
-                'seatName': seatName,
-                'train_number': resp['checi'], 'phone': json.loads(account['data'])['username'],
-                'touristList': [
-                    {"birthday": resp['passport_se_no'][6:10] + '-' + resp['passport_se_no'][10:12] + '-'
-                                 + resp['passport_se_no'][12:14],
-                     "name": resp['passenger_name'], "psptId": resp['passport_se_no'], "psptType": 1,
-                     "isAdult": 1,
-                     "sex": 1}], 'promotionList': []  # '126246' int(resp['passport_se_no'][-2]) % 2
-            }
+        adsl_service.reconnect()
+        trainService = service.TrainOrderService(json.loads(account['data']), account['id'])
+        logger.info('prepare the orders data')
 
-            logger.debug("READY:%s" % data)
-            resp = trainService.place_order(data, partner_order_id, [])#[210]
-            logger.info('ALL SUCCESS.')
-
-            # logger.info('partner callback 1# begin.')
-            # req = requests.get(base_data.train_order_callback % (partner_order_id, 'true'))
-            # resp = req.json()
-            # logger.info(resp)
-
-            logger.info('mobilepay callback')
-            req = requests.put(base_data.set_order_status % (order_id, u'下单成功'), data=json.dumps(resp),
-                               headers={'Content-Type': 'application/json'})
-            logger.info(req.text)
-
-            logger.info('put account ordercount')
-            req = requests.put(base_data.put_account_ordercount % account['id'])
-            logger.info(req.text)
-
-            if base_data.payChannel == 8:
-                req = requests.get(
-                    'http://op.yikao666.cn/JDTrainOpen/CallBackForTNLock?tnOrderno=%s&userName=%s&password=%s&sessionid=%s&order_id=%s&success=%s&amount=%s&cookie=%s&m_cookie=%s' % (
-                        resp['bizOrderId'], resp['account']['username'], resp['account']['password'], resp['account']['sessionid']+','+str(resp['account']['userid']),
-                        str(partner_order_id), 'true', resp['price'], account['cookie'],resp['cookie']))
-                logger.info(req.text)
-            sleep(PLACEORDERINTERVAL)
-        elif req.status_code == 204:
-            logger.error('not more tuniu account')
-            sleep(FAILDWAITING)
-            continue
+        if resp['zw_name'] == u'二等座':
+            seatName = u'二等'
+        elif resp['zw_name'] == u'一等座':
+            seatName = u'一等'
+        elif resp['zw_name'] == u'特等座':
+            seatName = u'特等'
+        elif resp['zw_name'] == u'商务座':
+            seatName = u'商务'
         else:
-            logger.error('get tuniu account falid')
-            sleep(FAILDWAITING)
-            continue
+            seatName = resp['zw_name']
+
+        data = {
+            'from': resp['from_station'], 'to': resp['to_station'],
+            'depart_date': resp['train_date'].replace('00:00:00', ''), 'price': resp['ticket_price'],
+            'seatName': seatName,
+            'train_number': resp['checi'], 'phone': json.loads(account['data'])['username'],
+            'touristList': [
+                {"birthday": resp['passport_se_no'][6:10] + '-' + resp['passport_se_no'][10:12] + '-'
+                             + resp['passport_se_no'][12:14],
+                 "name": resp['passenger_name'], "psptId": resp['passport_se_no'], "psptType": 1,
+                 "isAdult": 1,
+                 "sex": 1}], 'promotionList': []  # '126246' int(resp['passport_se_no'][-2]) % 2
+        }
+
+        logger.debug("READY:%s" % data)
+        resp = trainService.place_order(data, partner_order_id, [])  # [210]
+        logger.info('ALL SUCCESS.')
+
+        # logger.info('partner callback 1# begin.')
+        # req = requests.get(base_data.train_order_callback % (partner_order_id, 'true'))
+        # resp = req.json()
+        # logger.info(resp)
+
+        logger.info('mobilepay callback')
+        req = requests.put(base_data.set_order_status % (order_id, u'下单成功'), data=json.dumps(resp),
+                           headers={'Content-Type': 'application/json'})
+        logger.info(req.text)
+
+        logger.info('put account ordercount')
+        req = requests.put(base_data.put_account_ordercount % account['id'])
+        logger.info(req.text)
+
+        if base_data.payChannel == 8:
+            req = requests.get(
+                'http://op.yikao666.cn/JDTrainOpen/CallBackForTNLock?tnOrderno=%s&userName=%s&password=%s&sessionid=%s&order_id=%s&success=%s&amount=%s&cookie=%s&m_cookie=%s' % (
+                    resp['bizOrderId'], resp['account']['username'], resp['account']['password'],
+                    resp['account']['sessionid'] + ',' + str(resp['account']['userid']),
+                    partner_order_id, 'true', resp['price'], account['cookie'], resp['cookie']))
+            logger.info(req.text)
 
     except Exception, e:
         logger.error(traceback.format_exc())
