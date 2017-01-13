@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# import adsl
+import adsl
 import service
 import base_data
 import log_ex as logger
@@ -9,11 +9,11 @@ import json
 import traceback
 from time import ctime, sleep
 
-# adsl_service = adsl.Adsl({"name": u"宽带连接".encode("gbk"),
-#                        "username": "057474432953",
-#                        "password": "734206"})
+adsl_service = adsl.Adsl({"name": u"宽带连接".encode("gbk"),
+                       "username": "057474432953",
+                       "password": "734206"})
 
-PLACEORDERINTERVAL = 20
+PLACEORDERINTERVAL = 1
 FAILDWAITING = 180
 
 while True:
@@ -28,6 +28,7 @@ while True:
         try:
             resp = req.json()
         except Exception, e:
+            print req.text
             logger.error('get train data error')
             sleep(5)
             continue
@@ -67,7 +68,7 @@ while True:
                 sleep(FAILDWAITING)
                 continue
 
-        # adsl_service.reconnect()
+        adsl_service.reconnect()
         trainService = service.TrainOrderService(json.loads(account['data']), account['id'])
         logger.info('prepare the orders data')
 
@@ -141,10 +142,10 @@ while True:
             try:
                 if base_data.payChannel == 8:
                     req = requests.get(
-                        'http://op.yikao666.cn/JDTrainOpen/CallBackForTNLock?order_id=%s&success=false' % partner_order_id)
+                        'http://op.yikao666.cn/JDTrainOpen/CallBackForTNLock?order_id=%s&success=false&msg=%s' % (partner_order_id,e.message))
                     logger.info(req.text)
                 else:
-                    req = requests.get(base_data.train_order_callback % (partner_order_id, 'false'))
+                    req = requests.get(base_data.train_order_callback % (partner_order_id, 'false',e.message))
                     resp = req.text
                     logger.info(resp)
             except Exception, e:
