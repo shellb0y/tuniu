@@ -9,13 +9,23 @@ import json
 import traceback
 import time
 from time import ctime, sleep
+import redis
 
+<<<<<<< HEAD
 adsl_service = adsl.Adsl({"name": u"宽带连接".encode("gbk"),
                         "username": "057474432953",
                         "password": "734206"})
+=======
+# adsl_service = adsl.Adsl({"name": u"宽带连接".encode("gbk"),
+#                        "username": "057474432953",
+#                        "password": "734206"})
+>>>>>>> 985815ee27411dc0a3ff3abe430a16a5e224139f
 
-PLACEORDERINTERVAL = 1
+PLACEORDERINTERVAL = 20
 FAILDWAITING = 180
+
+pool = redis.ConnectionPool(host='139.199.65.115', port=6379, db=1, password='melodicdeath')
+r = redis.Redis(connection_pool=pool)
 
 while True:
     partner_order_id = ''
@@ -74,7 +84,7 @@ while True:
                 sleep(FAILDWAITING)
                 continue
 
-        adsl_service.reconnect()
+        # adsl_service.reconnect()
         trainService = service.TrainOrderService(json.loads(account['data']), account['id'])
         logger.info('prepare the orders data')
 
@@ -104,7 +114,6 @@ while True:
 
         logger.debug("READY:%s" % data)
         resp = trainService.place_order(data, partner_order_id, [])  # [210]
-        logger.info('ALL SUCCESS.')
 
         # logger.info('partner callback 1# begin.')
         # req = requests.get(base_data.train_order_callback % (partner_order_id, 'true'))
@@ -121,12 +130,47 @@ while True:
         logger.info(req.text)
 
         if base_data.payChannel == 8:
-            req = requests.get(
-                'http://op.yikao666.cn/JDTrainOpen/CallBackForTNLock?tnOrderno=%s&userName=%s&password=%s&sessionid=%s&order_id=%s&success=%s&amount=%s&cookie=%s&m_cookie=%s' % (
+            logger.info('get pc cookie')
+            cookie = r.get(account['id'])
+            if cookie:
+                logger.info('from redis')
+            else:
+                try:
+                    data = requests.get(
+                        'http://115.29.79.63:9001/api/Cookie/Get?username=%s&password=%s&bizOrderId=%s&tnOrderId=%s' % (
+                            resp['account']['username'], resp['account']['password'], resp['bizOrderId'],
+                            resp['tuniu_orderId']
+                        ), timeout=10)
+
+                    data = data.json()
+                    logger.info('success')
+
+                    if data['Status']:
+                        cookie = data['Cookie']
+                        r.set(account['id'], cookie)
+                        r.expire(account['id'], 4 * 60 * 60)
+                    else:
+                        if '错误' in data['Message']:
+                            logger.info('account cant use,send to server')
+                            resp = requests.put(base_data.put_aacount_cantuse % account['id'])
+                            logger.info(resp.text)
+
+                except Exception, e:
+                    logger.error(e.message)
+
+            req = requests.post(
+                'http://op.yikao666.cn/JDTrainOpen/CallBackForTNLock',
+                'tnOrderno=%s&userName=%s&password=%s&sessionid=%s&order_id=%s&success=%s&amount=%s&cookie=%s&m_cookie=%s' % (
                     resp['bizOrderId'], resp['account']['username'], resp['account']['password'],
                     resp['account']['sessionid'] + ',' + str(resp['account']['userid']),
-                    partner_order_id, 'true', resp['price'], account['cookie'], resp['cookie']))
+                    partner_order_id, 'true', resp['price'], cookie, resp['cookie']),
+                headers={'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'})  # account['cookie']
             logger.info(req.text)
+<<<<<<< HEAD
+=======
+        logger.info('ALL SUCCESS.')
+        sleep(PLACEORDERINTERVAL)
+>>>>>>> 985815ee27411dc0a3ff3abe430a16a5e224139f
 
     except Exception, e:
         logger.error(traceback.format_exc())
@@ -146,13 +190,13 @@ while True:
             try:
                 if base_data.payChannel == 8:
                     req = requests.get(
-                        'http://op.yikao666.cn/JDTrainOpen/CallBackForTNLock?order_id=%s&success=false&msg=%s' % (partner_order_id,e.message))
+                        'http://op.yikao666.cn/JDTrainOpen/CallBackForTNLock?order_id=%s&success=false&msg=%s' % (
+                            partner_order_id, e.message))
                     logger.info(req.text)
                 else:
-                    req = requests.get(base_data.train_order_callback % (partner_order_id, 'false',e.message))
+                    req = requests.get(base_data.train_order_callback % (partner_order_id, 'false', e.message))
                     resp = req.text
                     logger.info(resp)
             except Exception, e:
                 logger.error('partner callback faild')
                 sleep(FAILDWAITING)
-
