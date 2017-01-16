@@ -34,6 +34,7 @@ while True:
         try:
             resp = req.json()
         except Exception, e:
+            print req.text
             logger.error('get train data error')
             sleep(5)
             continue
@@ -145,10 +146,10 @@ while True:
             try:
                 if base_data.payChannel == 8:
                     req = requests.get(
-                        'http://op.yikao666.cn/JDTrainOpen/CallBackForTNLock?order_id=%s&success=false' % partner_order_id)
+                        'http://op.yikao666.cn/JDTrainOpen/CallBackForTNLock?order_id=%s&success=false&msg=%s' % (partner_order_id,e.message))
                     logger.info(req.text)
                 else:
-                    req = requests.get(base_data.train_order_callback % (partner_order_id, 'false'))
+                    req = requests.get(base_data.train_order_callback % (partner_order_id, 'false',e.message))
                     resp = req.text
                     logger.info(resp)
             except Exception, e:
