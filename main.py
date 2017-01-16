@@ -148,10 +148,10 @@ while True:
 
             req = requests.post(
                 'http://op.yikao666.cn/JDTrainOpen/CallBackForTNLock',
-                'tnOrderno=%s&userName=%s&password=%s&sessionid=%s&order_id=%s&success=%s&amount=%s&cookie=%s&m_cookie=%s' % (
+                'tnOrderno=%s&userName=%s&password=%s&sessionid=%s&order_id=%s&success=%s&amount=%s&cookie=%s&m_cookie=%s&payid=%s' % (
                     resp['bizOrderId'], resp['account']['username'], resp['account']['password'],
                     resp['account']['sessionid'] + ',' + str(resp['account']['userid']),
-                    partner_order_id, 'true', resp['price'], cookie, resp['cookie']),
+                    partner_order_id, 'true', resp['price'], cookie, resp['cookie'],resp['tuniu_orderId']),
                 headers={'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'})  # account['cookie']
             logger.info(req.text)
         logger.info('ALL SUCCESS.')
