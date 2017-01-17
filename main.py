@@ -136,8 +136,9 @@ while True:
                     if data['Status']:
                         cookie = data['Cookie']
                         r.set(account['id'], cookie)
-                        r.expire(account['id'], 4 * 60 * 60)
+                        r.expire(account['id'], 2 * 60 * 60)
                     else:
+                        cookie = ''
                         if '错误' in data['Message']:
                             logger.info('account cant use,send to server')
                             resp = requests.put(base_data.put_aacount_cantuse % account['id'])
@@ -151,7 +152,7 @@ while True:
                 'tnOrderno=%s&userName=%s&password=%s&sessionid=%s&order_id=%s&success=%s&amount=%s&cookie=%s&m_cookie=%s&payid=%s' % (
                     resp['bizOrderId'], resp['account']['username'], resp['account']['password'],
                     resp['account']['sessionid'] + ',' + str(resp['account']['userid']),
-                    partner_order_id, 'true', resp['price'], cookie, resp['cookie'],resp['tuniu_orderId']),
+                    partner_order_id, 'true', resp['price'], cookie, resp['cookie'], resp['tuniu_orderId']),
                 headers={'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'})  # account['cookie']
             logger.info(req.text)
         logger.info('ALL SUCCESS.')
