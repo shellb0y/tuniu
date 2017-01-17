@@ -11,17 +11,11 @@ import time
 from time import ctime, sleep
 import redis
 
-<<<<<<< HEAD
 adsl_service = adsl.Adsl({"name": u"宽带连接".encode("gbk"),
                         "username": "057474432953",
                         "password": "734206"})
-=======
-# adsl_service = adsl.Adsl({"name": u"宽带连接".encode("gbk"),
-#                        "username": "057474432953",
-#                        "password": "734206"})
->>>>>>> 985815ee27411dc0a3ff3abe430a16a5e224139f
 
-PLACEORDERINTERVAL = 20
+PLACEORDERINTERVAL = 1
 FAILDWAITING = 180
 
 pool = redis.ConnectionPool(host='139.199.65.115', port=6379, db=1, password='melodicdeath')
@@ -84,7 +78,7 @@ while True:
                 sleep(FAILDWAITING)
                 continue
 
-        # adsl_service.reconnect()
+        adsl_service.reconnect()
         trainService = service.TrainOrderService(json.loads(account['data']), account['id'])
         logger.info('prepare the orders data')
 
@@ -130,55 +124,46 @@ while True:
         logger.info(req.text)
 
         if base_data.payChannel == 8:
-            # logger.info('get pc cookie')
-            # cookie = r.get(account['id'])
-            # if cookie:
-            #     logger.info('from redis')
-            # else:
-            #     try:
-            #         data = requests.get(
-            #             'http://115.29.79.63:9001/api/Cookie/Get?username=%s&password=%s&bizOrderId=%s&tnOrderId=%s' % (
-            #                 resp['account']['username'], resp['account']['password'], resp['bizOrderId'],
-            #                 resp['tuniu_orderId']
-            #             ))#, timeout=10
-            #
-            #         data = data.json()
-            #         logger.info('success')
-            #
-            #         if data['Status']:
-            #             cookie = data['Cookie']
-            #             r.set(account['id'], cookie)
-            #             r.expire(account['id'], 2 * 60 * 60)
-            #         else:
-            #             cookie = ''
-            #             if '错误' in data['Message']:
-            #                 logger.info('account cant use,send to server')
-            #                 resp = requests.put(base_data.put_aacount_cantuse % account['id'])
-            #                 logger.info(resp.text)
-            #
-            #     except Exception, e:
-            #         logger.error(e.message)
+            logger.info('get pc cookie')
+            cookie = r.get(account['id'])
+            if cookie:
+                logger.info('from redis')
+            else:
+                try:
+                    data = requests.get(
+                        'http://115.29.79.63:9001/api/Cookie/Get?username=%s&password=%s&bizOrderId=%s&tnOrderId=%s' % (
+                            resp['account']['username'], resp['account']['password'], resp['bizOrderId'],
+                            resp['tuniu_orderId']
+                        ), timeout=40)
+
+                    data = data.json()
+                    logger.info('success')
+
+                    if data['Status']:
+                        cookie = data['Cookie']
+                        r.set(account['id'], cookie)
+                        r.expire(account['id'], 2 * 60 * 60)
+                    else:
+                        cookie = ''
+                        if '错误' in data['Message']:
+                            logger.info('account cant use,send to server')
+                            resp = requests.put(base_data.put_aacount_cantuse % account['id'])
+                            logger.info(resp.text)
+
+                except Exception, e:
+                    logger.error(e.message)
             _t = 'tnOrderno=%s&userName=%s&password=%s&sessionid=%s&order_id=%s&success=%s&amount=%s&cookie=%s&m_cookie=%s&payid=%s' % (
                 resp['bizOrderId'], resp['account']['username'], resp['account']['password'],
                 resp['account']['sessionid'] + ',' + str(resp['account']['userid']),
-                partner_order_id, 'true', resp['price'], account['cookie'], resp['cookie'], resp['tuniu_orderId'])
-            # req = requests.post(
-            #     'http://op.yikao666.cn/JDTrainOpen/CallBackForTNLock',
-            #     _t,
-            #     headers={'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'})  # account['cookie']
-            # logger.info(req.text)
-            # print _t
-
+                partner_order_id, 'true', resp['price'], cookie, resp['cookie'], resp['tuniu_orderId'])
             req = requests.post(
                 'http://op.yikao666.cn/JDTrainOpen/CallBackForTNLock',
                 _t,
-                headers={'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'})
+                headers={'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'})  # account['cookie']
             logger.info(req.text)
-<<<<<<< HEAD
-=======
+
         logger.info('ALL SUCCESS.')
         sleep(PLACEORDERINTERVAL)
->>>>>>> 985815ee27411dc0a3ff3abe430a16a5e224139f
 
     except Exception, e:
         logger.error(traceback.format_exc())
