@@ -13,6 +13,7 @@ rsa_encode = 'http://115.28.102.142:8081/api/rsa/encode/%s'
 
 save_order = 'http://115.28.102.142:8000/api/mobilepay/order'
 set_order_status = 'http://115.28.102.142:8000/api/mobilepay/order/status/%s/%s'
+# get_account_tuniu = 'http://localhost:8000/api/mobilepay/account/tuniu'
 get_account_tuniu = 'http://115.28.102.142:8000/api/mobilepay/account/tuniu'
 put_account = 'http://115.28.102.142:8000/api/mobilepay/account/%d'
 put_account_ordercount = 'http://115.28.102.142:8000/api/mobilepay/account/ordercount/%s'
@@ -35,7 +36,7 @@ def get_cc():
 logger.info('get tuniu stations and citys...')
 
 params = {'d': json.dumps({"version": "3"}),
-          'c': json.dumps({"v": "8.1.6", "ct": 20, "dt": 1, "ov": 1, "p": get_partner(), "cc": get_cc()})}
+          'c': json.dumps({"v": "9.0.1", "ct": 20, "dt": 1, "ov": 1, "p": get_partner(), "cc": get_cc()})}
 req = requests.get('http://m.tuniu.com/api/train/product/StationCitys', params)
 resp = req.json()
 TRAINSTAIONLIST = resp['data']['trainStationlist']

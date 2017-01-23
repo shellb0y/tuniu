@@ -56,7 +56,7 @@ class TrainOrderService:
                 err = '2#.login faild'
 
                 logger.info('account cant use,send to server')
-                resp = requests.put(base_data.put_aacount_cantuse % self.acountid)
+                resp = requests.put(base_data.put_aacount_cantuse % self.accountid)
                 logger.info(resp.text)
 
                 logger.error(err)
@@ -112,8 +112,8 @@ class TrainOrderService:
         # logger.debug('train order coupon resp:%s' % train_order_coupon_resp)
 
         if train_order_coupon_resp['success'] and train_order_coupon_resp['data']['sortData']:
-            coupon = train_order_coupon_resp['data']['sortData'][
-                random.randint(0, len(train_order_coupon_resp['data']['sortData'])) - 1]
+            coupon = train_order_coupon_resp['data']['sortData'][0]
+                #random.randint(0, len(train_order_coupon_resp['data']['sortData'])) - 1]
             logger.info('find it.use %s' % coupon['number'])
             data['promotionList'].append(coupon['number'])
             data['price'] -= coupon['reduction']
@@ -162,7 +162,7 @@ class TrainOrderService:
 
                 # --回调优惠券金额
                 headers = {'content-type': 'application/json; charset=UTF-8',
-                           'User-Agent': 'TuNiuApp/8.1.6/Dalvik/1.6.0 (Linux; U; Android 4.2.2)',
+                           'User-Agent': 'TuNiuApp/9.0.1/Dalvik/1.6.0 (Linux; U; Android 4.2.2)',
                            'cookie': cookie}
                 req = requests.get(
                     'http://m.tuniu.com/userOrder/trainTicketOrderDetailAjax?data=%7B%22orderId%22%3A%22' + str(

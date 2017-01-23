@@ -10,7 +10,7 @@ import log_ex as logger
 
 
 # POST https://m.tuniu.com/api/user/auth/beginSession?c=%7B%22v%22%3A%228.1.5%22%2C%22ct%22%3A20%2C%22dt%22%3A1%2C%22ov%22%3A1%2C%22p%22%3A18798%2C%22cc%22%3A2500%7D HTTP/1.1
-# User-Agent: TuNiuApp/8.1.6/Dalvik/1.6.0 (Linux; U; Android 4.2.2; Full JellyBean on Mako Build/JDQ39E)
+# User-Agent: TuNiuApp/9.0.1/Dalvik/1.6.0 (Linux; U; Android 4.2.2; Full JellyBean on Mako Build/JDQ39E)
 # host: m.tuniu.com
 # Content-Type: application/json; charset=UTF-8
 # Content-Length: 290
@@ -40,7 +40,7 @@ def begin_session(partner, cc):
     timestamp = time.time()
     lg = str(timestamp).replace('.', '')
     data = {"sessionId": "0",
-            "parameters": {"version": "8.1.6", "token": base_data.get_random_letter_number(),
+            "parameters": {"version": "9.0.1", "token": base_data.get_random_letter_number(),
                            "createTime": time.ctime(timestamp),
                            "sid": base_data.get_sid(lg), "imei": base_data.get_random_number(),
                            "lg": lg, "partner": partner, "deviceType": 1, "clientType": 20, "apiType": 1},
@@ -48,10 +48,10 @@ def begin_session(partner, cc):
 
     # print data
 
-    c = {"v": "8.1.6", "ct": 20, "dt": 1, "ov": 1, "p": partner, "cc": cc}
+    c = {"v": "9.0.1", "ct": 20, "dt": 1, "ov": 1, "p": partner, "cc": cc}
     url = 'https://m.tuniu.com/api/user/auth/beginSession?c=%s' % json.dumps(c)
     req = requests.post(url, json=data, headers={'content-type': 'application/json; charset=UTF-8',
-                                                 'User-Agent': 'TuNiuApp/8.1.6/Dalvik/1.6.0 (Linux; U; Android 4.2.2)'})
+                                                 'User-Agent': 'TuNiuApp/9.0.1/Dalvik/1.6.0 (Linux; U; Android 4.2.2)'})
     # print url
     logger.debug('POST %s \n%s \n%s' % (req.url, req.headers, data))
     try:
@@ -64,7 +64,7 @@ def begin_session(partner, cc):
                                        'resp_content': req.content})
 
 
-# GET https://m.tuniu.com/api/user/auth/login?d={"captcha":"","deviceId":"31f432734f0fb42f2bc55352abc1:28","sessionId":"bb3fdf37ef796386b446181279323a64","loginId":"15728532201","password":"f88be3495c9c29561a17c8755b073ebf","isDynamic":0}&c={"v":"8.1.6","ct":20,"dt":1,"ov":1,"p":18798,"cc":1502} HTTP/1.1
+# GET https://m.tuniu.com/api/user/auth/login?d={"captcha":"","deviceId":"31f432734f0fb42f2bc55352abc1:28","sessionId":"bb3fdf37ef796386b446181279323a64","loginId":"15728532201","password":"f88be3495c9c29561a17c8755b073ebf","isDynamic":0}&c={"v":"9.0.1","ct":20,"dt":1,"ov":1,"p":18798,"cc":1502} HTTP/1.1
 # User-Agent: Fiddler
 # Host: m.tuniu.com
 # Content-Length: 0
@@ -85,11 +85,11 @@ def login(sessionid, username, password, partner, cc):
         'd': json.dumps({"captcha": "", "deviceId": base_data.get_random_letter_number(28),
                          "sessionId": sessionid, "loginId": username,
                          "password": hashlib.md5(password).hexdigest(), "isDynamic": 0}),
-        'c': json.dumps({"v": "8.1.6", "ct": 20, "dt": 1, "ov": 1, "p": partner, "cc": cc})}
+        'c': json.dumps({"v": "9.0.1", "ct": 20, "dt": 1, "ov": 1, "p": partner, "cc": cc})}
 
     req = requests.get('https://m.tuniu.com/api/user/auth/login', params,
                        headers={'content-type': 'application/json; charset=UTF-8',
-                                'User-Agent': 'TuNiuApp/8.1.6/Dalvik/1.6.0 (Linux; U; Android 4.2.2)'})
+                                'User-Agent': 'TuNiuApp/9.0.1/Dalvik/1.6.0 (Linux; U; Android 4.2.2)'})
 
     logger.debug('GET %s \n%s' % (req.url, req.headers))
     try:

@@ -15,11 +15,11 @@ adsl_service = adsl.Adsl({"name": u"宽带连接".encode("gbk"),
                         "username": "057474432953",
                         "password": "734206"})
 
-PLACEORDERINTERVAL = 1
+PLACEORDERINTERVAL = 20
 FAILDWAITING = 180
 
-pool = redis.ConnectionPool(host='139.199.65.115', port=6379, db=1, password='melodicdeath')
-r = redis.Redis(connection_pool=pool)
+# pool = redis.ConnectionPool(host='139.199.65.115', port=6379, db=1, password='melodicdeath')
+# r = redis.Redis(connection_pool=pool)
 
 while True:
     partner_order_id = ''
@@ -78,7 +78,7 @@ while True:
                 sleep(FAILDWAITING)
                 continue
 
-        adsl_service.reconnect()
+        # adsl_service.reconnect()
         trainService = service.TrainOrderService(json.loads(account['data']), account['id'])
         logger.info('prepare the orders data')
 
@@ -107,7 +107,7 @@ while True:
         }
 
         logger.debug("READY:%s" % data)
-        resp = trainService.place_order(data, partner_order_id, [])  # [210]
+        resp = trainService.place_order(data, partner_order_id, [210])  # [210]
 
         # logger.info('partner callback 1# begin.')
         # req = requests.get(base_data.train_order_callback % (partner_order_id, 'true'))
