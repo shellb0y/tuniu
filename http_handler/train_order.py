@@ -80,7 +80,7 @@ def add_order(sessionid, partner, cc, data):
             headers = {'User-Agent': base_data.get_user_agent(),
                        'Content-Type': 'application/json; charset=UTF-8'}
 
-            req = requests.get('http://m.tuniu.com/api/train/order/AddOrder', headers=headers, json=params)
+            req = requests.get('http://m.tuniu.com/api/train/order/AddOrder', params, headers=headers)
             logger.debug('GET %s' % req.url)
             try:
                 resp = req.json()
@@ -117,7 +117,7 @@ def get_train_list(data):
     headers = {'User-Agent': base_data.get_user_agent(),
                'Content-Type': 'application/json; charset=UTF-8'}
 
-    url = 'http://m.tuniu.com/api/train/product/ticketListWithFresh?c=%7B%22v%22%3A%229.0.6%22%2C%22ct%22%3A20%2C%22dt%22%3A1%2C%22ov%22%3A1%2C%22p%22%3A15447%2C%22cc%22%3A1502%7D'
+    url = 'http://m.tuniu.com/api/train/product/ticketListWithFresh?c=%7B%22v%22%3A%228.1.6%22%2C%22ct%22%3A20%2C%22dt%22%3A1%2C%22ov%22%3A1%2C%22p%22%3A15447%2C%22cc%22%3A1502%7D'
     req = requests.post(url, json=data, headers=headers)
 
     logger.debug('POST #1 %s\n%s \n%s' % (req.url, req.headers, data))
