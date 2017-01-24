@@ -40,7 +40,7 @@ def begin_session(partner, cc):
     timestamp = time.time()
     lg = str(timestamp).replace('.', '')
     data = {"sessionId": "0",
-            "parameters": {"version": "9.0.1", "token": base_data.get_random_letter_number(),
+            "parameters": {"version": "9.0.6", "token": base_data.get_random_letter_number(),
                            "createTime": time.ctime(timestamp),
                            "sid": base_data.get_sid(lg), "imei": base_data.get_random_number(),
                            "lg": lg, "partner": partner, "deviceType": 1, "clientType": 20, "apiType": 1},
@@ -48,10 +48,10 @@ def begin_session(partner, cc):
 
     # print data
 
-    c = {"v": "9.0.1", "ct": 20, "dt": 1, "ov": 1, "p": partner, "cc": cc}
+    c = {"v": "9.0.6", "ct": 20, "dt": 1, "ov": 1, "p": partner, "cc": cc}
     url = 'https://m.tuniu.com/api/user/auth/beginSession?c=%s' % json.dumps(c)
     req = requests.post(url, json=data, headers={'content-type': 'application/json; charset=UTF-8',
-                                                 'User-Agent': 'TuNiuApp/9.0.1/Dalvik/1.6.0 (Linux; U; Android 4.2.2)'})
+                                                 'User-Agent': base_data.get_user_agent()})
     # print url
     logger.debug('POST %s \n%s \n%s' % (req.url, req.headers, data))
     try:
@@ -85,11 +85,11 @@ def login(sessionid, username, password, partner, cc):
         'd': json.dumps({"captcha": "", "deviceId": base_data.get_random_letter_number(28),
                          "sessionId": sessionid, "loginId": username,
                          "password": hashlib.md5(password).hexdigest(), "isDynamic": 0}),
-        'c': json.dumps({"v": "9.0.1", "ct": 20, "dt": 1, "ov": 1, "p": partner, "cc": cc})}
+        'c': json.dumps({"v": "9.0.6", "ct": 20, "dt": 1, "ov": 1, "p": partner, "cc": cc})}
 
     req = requests.get('https://m.tuniu.com/api/user/auth/login', params,
                        headers={'content-type': 'application/json; charset=UTF-8',
-                                'User-Agent': 'TuNiuApp/9.0.1/Dalvik/1.6.0 (Linux; U; Android 4.2.2)'})
+                                'User-Agent': base_data.get_user_agent()})
 
     logger.debug('GET %s \n%s' % (req.url, req.headers))
     try:

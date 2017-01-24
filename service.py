@@ -162,7 +162,7 @@ class TrainOrderService:
 
                 # --回调优惠券金额
                 headers = {'content-type': 'application/json; charset=UTF-8',
-                           'User-Agent': 'TuNiuApp/9.0.1/Dalvik/1.6.0 (Linux; U; Android 4.2.2)',
+                           'User-Agent': 'TuNiuApp/9.0.6/Dalvik/1.6.0 (Linux; U; Android 4.2.2)',
                            'cookie': cookie}
                 req = requests.get(
                     'http://m.tuniu.com/userOrder/trainTicketOrderDetailAjax?data=%7B%22orderId%22%3A%22' + str(
