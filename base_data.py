@@ -9,7 +9,7 @@ import log_ex as logger
 
 get_train_order = 'http://op.yikao666.cn/JDTrainOpen/getOrderForTN'
 train_order_callback = 'http://op.yikao666.cn/JDTrainOpen/CallBackForTN?order_id=%s&success=%s&msg=%s'
-rsa_encode = 'http://115.28.102.142:8081/api/rsa/encode/%s'
+rsa_encode = 'http://118.190.17.80:8081/api/rsa/encode/%s'
 
 save_order = 'http://115.28.102.142:8000/api/mobilepay/order'
 set_order_status = 'http://115.28.102.142:8000/api/mobilepay/order/status/%s/%s'
